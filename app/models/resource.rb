@@ -46,7 +46,15 @@ class Resource
   end
 
   def self.storage_path(path)
-    Rails.root.join('data', path).to_s
+    Rails.root.join('data', sanitize_path(path)).to_s
+  end
+
+  def self.sanitize_path(path)
+    path.split('/').compact.map(&method(:sanitize_path_element)).join('/')
+  end
+
+  def self.sanitize_path_element(s)
+    s.parameterize
   end
 
   def self.digest(path)
