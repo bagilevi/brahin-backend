@@ -14,7 +14,13 @@ class Resource
   end
 
   def self.find_or_initialize_by_path(path)
-    find_by_path(path) || new(id: rand(10**20), path: path, editor: 'first-v0.0.1', body: '').tap(&:init_plain_html_page)
+    find_by_path(path) || new(
+      id: rand(10**20),
+      path: path,
+      editor: 'memonite-slate-v0.0.1',
+      editor_url: 'http://localhost:3573/static/js/bundle.js',
+      body: ''
+    ).tap(&:init_plain_html_page)
   end
 
   def self.find_by_path(path)

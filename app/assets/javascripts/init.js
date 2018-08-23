@@ -8,52 +8,76 @@ var Memonite;
     loadScript,
     loadCss,
     debounce,
+    initResourceEditor,
   }
+
+  const { display } = Memonite;
 
   $(document).ready(() => {
     loadScript('/assets/ui.js')
-    initResourceEditor()
+    loadScript('/assets/linking.js')
+    loadScript('/assets/spa.js')
+    initResourceEditorFromDocument()
   })
 
-  // Find the main resource on the page and load its editor
-  function initResourceEditor() {
-    const $el = $('.m-resource').first()
-    const resourceId = $el.data('m-id')
-    const resourceUrl = window.location.href
-    const resourcePath = window.location.pathname
-    const editorName = $el.data('m-editor')
-    const editorUrl = $el.data('m-editor-url') || `/assets/${editorName}.js`
-    console.log('loading', name)
 
-    loadScript(editorUrl).then(() => {
-      console.log('loaded')
-      const editor = Memonite.editors[editorName]
+  // Find the main resource on the page and load its editor
+  function initResourceEditorFromDocument() {
+    const el = $('.m-resource').first()
+    const resource = {
+      id: el.data('m-id'),
+      url: window.location.href,
+      path: window.location.pathname,
+      editor: el.data('m-editor'),
+      editor_url: el.data('m-editor-url'),
+      body: el.html(),
+    }
+    console.log('loading', name)
+    initResourceEditor(resource, el)
+  }
+
+  function initResourceEditor(resource, el) {
+    loadScript(getEditorUrl(resource)).then(() => {
+      const editor = Memonite.editors[resource.editor]
+      if (!editor) {
+        throw new Error(`Script loaded from "${resource.editor_url}" expected to define editor "${resource.editor}"`)
+      }
       const onChange = (newBody) => {
-        console.log('change', newBody)
-        saveResource(resourcePath, resourceId, newBody)
+        if (newBody != resource.body) {
+          console.log('change', newBody)
+          resource.body = newBody
+          saveResource(resource, { body: newBody })
+        }
       }
       const debouncedOnChange = Memonite.debounce(onChange, 1000)
-      editor.init($el, debouncedOnChange)
+      editor.init(el, debouncedOnChange)
     })
   }
 
-  function saveResource(path, id, body) {
+  function saveResource(resource, updatedAttributes) {
+    const data = _.assign({ authenticity_token: authenticityToken }, updatedAttributes)
+
     $.ajax({
-      url: path,
+      url: resource.path,
       method: 'patch',
-      data: {
-        authenticity_token: authenticityToken,
-        body: body,
-      }
+      data: data
     })
   }
+
+  var scripts = {}
 
   function loadScript(url) {
+    if (!url) throw new Error('blank url given to loadScript')
+    var s = scripts[url];
+    if (s) return Promise.resolve();
     return new Promise((resolve, reject) => {
       $.ajax({
         url: url,
         dataType: 'script',
-        success: resolve,
+        success: () => {
+          scripts[url] = true;
+          resolve();
+        },
         async: true
       });
     })
@@ -85,4 +109,12 @@ var Memonite;
   function isUrl(s) {
     return s.startsWith('http:') || s.startsWith('https:')
   }
+
+  function getEditorUrl(resource) {
+    const { editor, editor_url } = resource;
+    if (editor_url) return editor_url;
+    if (!editor) throw new Error('resource does not have "editor" property')
+    return `/assets/${editor}.js`
+  }
+
 })();
