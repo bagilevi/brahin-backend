@@ -18,6 +18,7 @@ module Memonite
 
     config.assets.precompile += %w(
       init.js
+      ui.js
       jquery-3.3.1.min.js
       first-v0.0.1.js
     )
