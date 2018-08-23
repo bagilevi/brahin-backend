@@ -1,12 +1,53 @@
 console.log("init")
 
-var Memonite = {
-  editors: []
-};
+var Memonite;
 
 (() => {
+  Memonite = {
+    editors: [],
+    loadScript,
+    loadCss,
+    debounce,
+  }
 
-  const loadScript = Memonite.loadScript = (url) => {
+  $(document).ready(() => {
+    loadScript('/assets/ui.js')
+    initResourceEditor()
+  })
+
+  // Find the main resource on the page and load its editor
+  function initResourceEditor() {
+    const $el = $('.m-resource').first()
+    const resourceId = $el.data('m-id')
+    const resourceUrl = window.location.href
+    const resourcePath = window.location.pathname
+    const editorName = $el.data('m-editor')
+    console.log('loading', name)
+
+    loadScript(`/assets/${editorName}.js`).then(() => {
+      console.log('loaded')
+      const editor = Memonite.editors[editorName]
+      const onChange = (newBody) => {
+        console.log('change', newBody)
+        saveResource(resourcePath, resourceId, newBody)
+      }
+      const debouncedOnChange = Memonite.debounce(onChange, 1000)
+      editor.init($el, debouncedOnChange)
+    })
+  }
+
+  function saveResource(path, id, body) {
+    $.ajax({
+      url: path,
+      method: 'patch',
+      data: {
+        authenticity_token: authenticityToken,
+        body: body,
+      }
+    })
+  }
+
+  function loadScript(url) {
     return new Promise((resolve, reject) => {
       $.ajax({
         url: url,
@@ -17,7 +58,7 @@ var Memonite = {
     })
   }
 
-  const loadCss = Memonite.loadCss = (url) => {
+  function loadCss(url) {
     return new Promise((resolve, reject) => {
       const linkEl = $('<link>').attr('rel', 'stylesheet').attr('href', url).attr('type', 'text/css')
       linkEl.get(0).onload = resolve
@@ -25,7 +66,7 @@ var Memonite = {
     })
   }
 
-  const debounce = Memonite.debounce = function(func, wait, immediate) {
+  function debounce(func, wait, immediate) {
     var timeout;
     return function() {
       var context = this, args = arguments;
@@ -39,38 +80,4 @@ var Memonite = {
       if (callNow) func.apply(context, args);
     };
   };
-
-  const saveResource = (path, id, body) => {
-    $.ajax({
-      url: path,
-      method: 'patch',
-      data: {
-        authenticity_token: authenticityToken,
-        body: body,
-      }
-    })
-  }
-
-  $(document).ready(() => {
-    const $el = $('.m-resource').first()
-    const resourceId = $el.data('m-id')
-    const resourceUrl = window.location.href
-    const resourcePath = window.location.pathname
-    const editorName = $el.data('m-editor')
-    console.log('loading', name)
-
-    loadScript(`/assets/ui.js`, () => {})
-
-    loadScript(`/assets/${editorName}.js`).then(() => {
-      console.log('loaded')
-      const editor = Memonite.editors[editorName]
-      const onChange = (newBody) => {
-        console.log('change', newBody)
-        saveResource(resourcePath, resourceId, newBody)
-      }
-      const debouncedOnChange = Memonite.debounce(onChange, 1000)
-      editor.init($el, debouncedOnChange)
-    })
-  })
-
 })();
