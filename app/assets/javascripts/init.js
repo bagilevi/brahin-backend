@@ -22,9 +22,10 @@ var Memonite;
     const resourceUrl = window.location.href
     const resourcePath = window.location.pathname
     const editorName = $el.data('m-editor')
+    const editorUrl = $el.data('m-editor-url') || `/assets/${editorName}.js`
     console.log('loading', name)
 
-    loadScript(`/assets/${editorName}.js`).then(() => {
+    loadScript(editorUrl).then(() => {
       console.log('loaded')
       const editor = Memonite.editors[editorName]
       const onChange = (newBody) => {
@@ -80,4 +81,8 @@ var Memonite;
       if (callNow) func.apply(context, args);
     };
   };
+
+  function isUrl(s) {
+    return s.startsWith('http:') || s.startsWith('https:')
+  }
 })();

@@ -1,3 +1,8 @@
-<div class="m-resource" data-m-id="<%= @resource.id %>" data-m-editor="<%= @resource.editor %>">
+<div
+  class="m-resource"
+  data-m-id="<%= @resource.id %>"
+  data-m-editor="<%= @resource.editor %>"
+  data-m-editor-url="<%= @resource.editor_url %>"
+>
   <%= @resource.body.html_safe %>
 </div>

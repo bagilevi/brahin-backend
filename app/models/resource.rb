@@ -4,6 +4,7 @@ class Resource
   attribute :id
   attribute :path
   attribute :editor
+  attribute :editor_url
   attribute :body
 
   def self.patch_by_path(params)
@@ -18,21 +19,28 @@ class Resource
 
   def self.find_by_path(path)
     filepath = storage_path(path)
-    if File.exist?(filepath)
-      new(JSON.parse(File.read(filepath)).merge(path: path))
+    if File.exist?(filepath + '.yaml')
+      attributes = YAML.load(File.read(filepath + '.yaml')).symbolize_keys.merge(path: path)
+      if File.exist?(filepath + '.html')
+        attributes[:body] = File.read(filepath + '.html')
+      end
+      new(attributes)
     end
   end
 
   def self.save(path, attributes)
     filepath = storage_path(path)
     FileUtils.mkdir_p(File.dirname(filepath))
-    File.open(filepath, 'w') do |f|
-      f.write(JSON.generate(attributes))
+    File.open(filepath + '.html', 'w') do |f|
+      f.write(attributes[:body])
+    end
+    File.open(filepath + '.yaml', 'w') do |f|
+      f.write(YAML.dump(attributes.except(:body).stringify_keys))
     end
   end
 
   def self.storage_path(path)
-    Rails.root.join('data', digest(path))
+    Rails.root.join('data', path).to_s
   end
 
   def self.digest(path)
