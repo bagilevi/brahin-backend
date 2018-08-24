@@ -50,6 +50,7 @@ class Resource
   end
 
   def self.sanitize_path(path)
+    return 'home' if path.blank?
     path.split('/').compact.map(&method(:sanitize_path_element)).join('/')
   end
 
