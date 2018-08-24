@@ -1,7 +1,7 @@
 console.log('linking module loaded');
 
 (() => {
-  const { loadScript, loadCss, initResourceEditor } = Memonite;
+  const { loadScript, loadCss, initResourceEditor, isUrl } = Memonite;
   const linking = Memonite.linking = {
     followLink,
     getLinkPropertiesForInsertion,
@@ -9,7 +9,17 @@ console.log('linking module loaded');
 
   window.onpopstate = onPopState
 
-  function followLink(link) {
+  function followLink(link, opts = {}) {
+    if (opts.ifNewResource) {
+      if (isUrl(link.href)) return;
+      createResourceNX(link.href, link.label).then((resource) => {
+        if (resource) {
+          followLink(link, _.omit(opts, 'ifNewResource'))
+        }
+        return;
+      });
+      return;
+    }
     if (!Memonite.spa) {
       console.warn('spa not defined => followLink reverting to page load')
       location.href = link.href;
@@ -61,5 +71,33 @@ console.log('linking module loaded');
         })
       })
     })
+  }
+
+  function createResourceNX(href, title) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        method: 'post',
+        url: href + '.json',
+        data: { title: title, authenticity_token: authenticityToken },
+        dataType: 'json',
+        success: (resource) => {
+          resolve(resource);
+        },
+        error: (err) => {
+          // console.error('$.ajax error', err);
+          logError({
+            error: 'Could not create new resource',
+            params: { href, title },
+            reason: '$.ajax error',
+            original: err
+          }, reject)
+        }
+      })
+    })
+  }
+
+  function logError(err, reject) {
+    console.error(err.error, err.params, err.reason, err.original);
+    if (reject) reject(err);
   }
 })()

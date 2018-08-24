@@ -29,13 +29,23 @@ class Resource
   end
 
   def self.find_or_initialize_by_path(path)
-    find_by_path(path) || new(
+    find_by_path(path) || initialize_by_path(path)
+  end
+
+  def self.initialize_by_path(path, opts = {})
+    new(
       id: rand(10**20),
       path: path,
       editor: 'memonite-slate-editor-v1',
       editor_url: ENV.fetch('MEMONITE_SLATE_EDITOR_URL', '/modules/memonite-slate-editor-v1.js'),
       body: ''
-    ).tap(&:init_plain_html_page)
+    ).tap do |resource|
+      resource.init_plain_html_page(opts)
+    end
+  end
+
+  def self.create(params)
+    initialize_by_path(params[:path], params.except(:path))
   end
 
   def self.find_by_path(path)
@@ -51,8 +61,8 @@ class Resource
     Digest::MD5.hexdigest(path)
   end
 
-  def init_plain_html_page
-    self.body = '<h1></h1><p></p>'
+  def init_plain_html_page(title: '')
+    self.body = "<h1>#{CGI.escapeHTML(title)}</h1><p></p>"
   end
 
   def save!

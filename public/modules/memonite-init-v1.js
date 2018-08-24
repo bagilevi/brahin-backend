@@ -7,6 +7,7 @@ console.log('init module loaded');
     loadCss,
     debounce,
     initResourceEditor,
+    isUrl,
   }
 
   const { display } = Memonite;
