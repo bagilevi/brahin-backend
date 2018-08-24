@@ -6,4 +6,5 @@ body, input, textarea {
   font-size: 14px;
 }
 
-li > p { margin: 0.5em 0; }
+.m-resource li > p { margin: 0.5em 0; }
+.m-resource .task > .task-contents > p { margin: 0.5em 0;  }
