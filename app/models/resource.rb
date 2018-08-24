@@ -45,8 +45,12 @@ class Resource
     end
   end
 
+  def self.root
+    Rails.root
+  end
+
   def self.storage_path(path)
-    Rails.root.join('data', sanitize_path(path)).to_s
+    root.join('data', sanitize_path(path)).to_s
   end
 
   def self.sanitize_path(path)
