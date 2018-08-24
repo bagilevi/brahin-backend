@@ -11,7 +11,14 @@ class Resource
     attr_writer :storage
 
     def storage
-      @storage ||= FileStorage.new
+      @storage ||= build_storage
+    end
+
+    def build_storage
+      return FileStorage.new if ENV['STORAGE'] == 'file'
+      return RedisStorage.new if ENV['STORAGE'] == 'redis'
+      return FileStorage.new if ENV['RAILS_ENV'].in?(['development', 'test'])
+      return RedisStorage.new
     end
   end
 
@@ -30,7 +37,6 @@ class Resource
       body: ''
     ).tap(&:init_plain_html_page)
   end
-
 
   def self.find_by_path(path)
     attributes = storage.get(path)
