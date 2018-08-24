@@ -4,7 +4,7 @@ class FileStorage
   def get(path)
     yamlpath, htmlpath = storage_paths(path)
     if File.exist?(yamlpath)
-      attributes = YAML.load(File.read(yamlpath)).symbolize_keys.merge(path: path)
+      attributes = YAML.load(File.read(yamlpath)).symbolize_keys
       if File.exist?(htmlpath)
         attributes[:body] = File.read(htmlpath)
       end

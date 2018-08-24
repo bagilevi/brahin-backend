@@ -7,6 +7,14 @@ class Resource
   attribute :editor_url
   attribute :body
 
+  class << self
+    attr_writer :storage
+
+    def storage
+      @storage ||= FileStorage.new
+    end
+  end
+
   def self.patch_by_path(params)
     instance = find_or_initialize_by_path(params[:path])
     instance.body = params[:body] if params.has_key?(:body)
@@ -23,13 +31,10 @@ class Resource
     ).tap(&:init_plain_html_page)
   end
 
-  def self.storage
-    @@storage ||= FileStorage.new
-  end
 
   def self.find_by_path(path)
     attributes = storage.get(path)
-    new(attributes) if attributes.present?
+    new(attributes.merge(path: path)) if attributes.present?
   end
 
   def self.save(path, attributes)

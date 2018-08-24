@@ -9,7 +9,7 @@ require 'virtus'
 
 ActiveSupport::Dependencies.autoload_paths += %w(
   app/models
-  lib
+  app/lib
 )
 
 ROOT_PATH = Pathname.new(File.dirname(__FILE__)).join('..')
