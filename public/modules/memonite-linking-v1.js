@@ -58,8 +58,15 @@ console.log('linking module loaded');
   function getLinkPropertiesForInsertion() {
     return new Promise((resolve, reject) => {
       var label;
-      Memonite.ui.prompt('Link label:').then((label) => {
+      Memonite.ui.prompt('Link label or URL:').then((label) => {
         if (!label || label === '') return;
+
+        if (isUrl(label)) {
+          resolve({
+            href: label
+          })
+          return;
+        }
 
         const defaultHref = `/${label.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`
         // const defaultHref = `${Math.random().toString(36).substring(2)}`
