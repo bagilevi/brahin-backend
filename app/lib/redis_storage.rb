@@ -13,7 +13,7 @@ class RedisStorage
   private
 
   def redis
-    Redis.new
+    $redis || Redis.new
   end
 
   def key(path)
