@@ -23,43 +23,17 @@ class Resource
     ).tap(&:init_plain_html_page)
   end
 
+  def self.storage
+    @@storage ||= FileStorage.new
+  end
+
   def self.find_by_path(path)
-    filepath = storage_path(path)
-    if File.exist?(filepath + '.yaml')
-      attributes = YAML.load(File.read(filepath + '.yaml')).symbolize_keys.merge(path: path)
-      if File.exist?(filepath + '.html')
-        attributes[:body] = File.read(filepath + '.html')
-      end
-      new(attributes)
-    end
+    attributes = storage.get(path)
+    new(attributes) if attributes.present?
   end
 
   def self.save(path, attributes)
-    filepath = storage_path(path)
-    FileUtils.mkdir_p(File.dirname(filepath))
-    File.open(filepath + '.html', 'w') do |f|
-      f.write(attributes[:body])
-    end
-    File.open(filepath + '.yaml', 'w') do |f|
-      f.write(YAML.dump(attributes.except(:body).stringify_keys))
-    end
-  end
-
-  def self.root
-    Rails.root
-  end
-
-  def self.storage_path(path)
-    root.join('data', sanitize_path(path)).to_s
-  end
-
-  def self.sanitize_path(path)
-    return 'home' if path.blank?
-    path.split('/').compact.map(&method(:sanitize_path_element)).join('/')
-  end
-
-  def self.sanitize_path_element(s)
-    s.parameterize
+    storage.put(path, attributes)
   end
 
   def self.digest(path)

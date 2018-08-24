@@ -2,7 +2,7 @@ require 'mini_helper'
 
 describe Resource do
   before do
-    allow(Resource).to receive(:root).and_return(ROOT_PATH)
+    allow_any_instance_of(FileStorage).to receive(:root).and_return(ROOT_PATH)
   end
 
   describe '.patch_by_path' do
