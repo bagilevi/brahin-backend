@@ -1,3 +1,5 @@
+console.log('linking module loaded');
+
 (() => {
   const { loadScript, loadCss, initResourceEditor } = Memonite;
   const linking = Memonite.linking = {

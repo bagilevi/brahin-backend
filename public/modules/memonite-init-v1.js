@@ -1,9 +1,7 @@
-console.log("init")
-
-var Memonite;
+console.log('init module loaded');
 
 (() => {
-  Memonite = {
+  const Memonite = window.Memonite = {
     editors: [],
     loadScript,
     loadCss,
@@ -14,10 +12,15 @@ var Memonite;
   const { display } = Memonite;
 
   $(document).ready(() => {
-    loadScript('/assets/ui.js')
-    loadScript('/assets/linking.js')
-    loadScript('/assets/spa.js')
-    initResourceEditorFromDocument()
+    Promise.all([
+      loadScript('/modules/memonite-ui-v1.js'),
+      loadScript('/modules/memonite-linking-v1.js'),
+      loadScript('/modules/memonite-spa-v1.js'),
+    ]).then(() => {
+      initResourceEditorFromDocument()
+    }).catch((err) => {
+      console.error('Could not load all modules, editor cannot be initialized.')
+    })
   })
 
 
@@ -32,7 +35,6 @@ var Memonite;
       editor_url: el.data('m-editor-url'),
       body: el.html(),
     }
-    console.log('loading', name)
     initResourceEditor(resource, el)
   }
 
@@ -77,6 +79,10 @@ var Memonite;
         success: () => {
           scripts[url] = true;
           resolve();
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+          console.error(`loadScript(${url})`, '$.ajax failed', textStatus, errorThrown)
+          reject(errorThrown)
         },
         async: true
       });

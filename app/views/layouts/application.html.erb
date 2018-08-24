@@ -7,11 +7,11 @@
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
 
-<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= stylesheet_link_tag    '/modules/memonite-page.css', media: 'all' %>
 <%= javascript_tag "var authenticityToken = '#{form_authenticity_token}';" if protect_against_forgery? %>
 <%= javascript_include_tag '/jquery/jquery-3.3.1.min.js'  %>
 <%= javascript_include_tag '/lodash/lodash.min.js'  %>
-<%= javascript_include_tag 'init' %>
+<%= javascript_include_tag '/modules/memonite-init-v1.js' %>
 
 </head>
 

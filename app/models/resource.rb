@@ -32,8 +32,8 @@ class Resource
     find_by_path(path) || new(
       id: rand(10**20),
       path: path,
-      editor: 'memonite-slate-v0.0.1',
-      editor_url: 'http://localhost:3573/static/js/bundle.js',
+      editor: 'memonite-slate-editor-v1',
+      editor_url: ENV.fetch('MEMONITE_SLATE_EDITOR_URL', '/modules/memonite-slate-editor-v1.js'),
       body: ''
     ).tap(&:init_plain_html_page)
   end

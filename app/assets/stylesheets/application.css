@@ -13,19 +13,3 @@
  *= require_tree .
  *= require_self
  */
-
-.ui-dialog.ui-widget.ui-widget-content.ui-memonite {
-  border: none;
-  padding: 0;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.25);
-  border-radius: 3px;
-}
-.ui-dialog-titlebar.ui-memonite { border: none; border-radius: 0; }
-
-body, input, textarea {
-  font-family: Open Sans, sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-}
-
-li > p { margin: 0.5em 0; }

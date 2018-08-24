@@ -1,3 +1,5 @@
+console.log('ui module loaded');
+
 (() => {
   const { loadScript, loadCss } = Memonite;
   const ui = Memonite.ui = {
