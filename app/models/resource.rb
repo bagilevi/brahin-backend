@@ -52,7 +52,7 @@ class Resource
   end
 
   def init_plain_html_page
-    self.body = '<h1>Untitled</h1><p>Lorem ipsum...</p>'
+    self.body = '<h1></h1><p></p>'
   end
 
   def save!

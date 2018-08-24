@@ -3,7 +3,8 @@ console.log('linking module loaded');
 (() => {
   const { loadScript, loadCss, initResourceEditor } = Memonite;
   const linking = Memonite.linking = {
-    followLink: followLink,
+    followLink,
+    getLinkPropertiesForInsertion,
   };
 
   window.onpopstate = onPopState
@@ -42,5 +43,23 @@ console.log('linking module loaded');
       return;
     }
     replaceResourceByCurrentLocation();
+  }
+
+  function getLinkPropertiesForInsertion() {
+    return new Promise((resolve, reject) => {
+      var label;
+      Memonite.ui.prompt('Link label:').then((label) => {
+        if (!label || label === '') return;
+
+        const defaultHref = `/${label.toLowerCase().replace(/[^a-z0-9-]/g, '-')}`
+        // const defaultHref = `${Math.random().toString(36).substring(2)}`
+        Memonite.ui.prompt('Target URL or href', defaultHref).then((href) => {
+          resolve({
+            label: label,
+            href: href,
+          })
+        })
+      })
+    })
   }
 })()
