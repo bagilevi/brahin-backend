@@ -1,7 +1,8 @@
 class ResourcesController < ApplicationController
-   force_ssl if ENV['FORCE_SSL']
-   before_action :authenticate_for_reading, only: :show
-   before_action :authenticate_for_writing, only: [:create, :patch]
+  force_ssl if ENV['FORCE_SSL']
+  before_action :authenticate_for_reading, only: :show
+  before_action :authenticate_for_writing, only: [:create, :patch]
+  before_action :sanitize_path
 
   def show
     if params[:edit]
@@ -57,6 +58,10 @@ class ResourcesController < ApplicationController
   end
 
   private
+
+  def sanitize_path
+    params[:path] = (params[:path] || '').sub(/.json$/, '').presence || 'home'
+  end
 
   def authorized_to_write?
     authorized_to?('write')

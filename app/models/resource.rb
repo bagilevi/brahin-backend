@@ -49,12 +49,12 @@ class Resource
   end
 
   def self.find_by_path(path)
-    attributes = storage.get(path)
+    attributes = storage.get(path.presence)
     new(attributes.merge(path: path)) if attributes.present?
   end
 
   def self.save(path, attributes)
-    storage.put(path, attributes)
+    storage.put(path.presence, attributes)
   end
 
   def self.digest(path)
