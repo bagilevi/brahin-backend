@@ -3,6 +3,7 @@ class Resource
 
   attribute :id
   attribute :path
+  attribute :title
   attribute :editor
   attribute :editor_url
   attribute :body
@@ -25,6 +26,7 @@ class Resource
   def self.patch_by_path(params)
     instance = find_or_initialize_by_path(params[:path])
     instance.body = params[:body] if params.has_key?(:body)
+    instance.title = params[:title] if params.has_key?(:title)
     instance.save!
   end
 

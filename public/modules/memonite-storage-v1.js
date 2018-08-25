@@ -29,8 +29,11 @@ console.log('storage module loaded');
       const newBody = getUpdatedBody();
       if (newBody != resource.body) {
         console.log('change', newBody)
-        resource.body = newBody
-        return saveResource(resource, { body: newBody })
+        const newTitle = $('<div>').html(newBody).find('h1').first().text();
+        resource.body = newBody;
+        if (newTitle) resource.title = newTitle;
+        document.title = resource.title; // TODO: if this resource is current
+        return saveResource(resource, resource)
       }
       return Promise.resolve();
     }

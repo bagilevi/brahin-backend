@@ -60,7 +60,7 @@ class ResourcesController < ApplicationController
   private
 
   def sanitize_path
-    params[:path] = (params[:path] || '').sub(/.json$/, '').presence || 'home'
+    params[:path] = (params[:path] || '').sub(/^\//, '').sub(/.json$/, '').presence || 'home'
   end
 
   def authorized_to_write?
