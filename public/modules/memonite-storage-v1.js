@@ -2,13 +2,10 @@
 console.log('storage module loaded');
 
 (() => {
-  // const { loadScript, loadCss,  } = Memonite;
   const storage = Memonite.storage = {
     createEditorChangeReceiver,
   };
 
-  // Receives changes from the editor, and saves it after doing some debouncing.
-  //
   // Returns a function that can be passed to the editor, to be called whenever
   // a change is made by the user.
   //

@@ -5,9 +5,7 @@ console.log('init module loaded');
     editors: [],
     loadScript,
     loadCss,
-    debounce,
     initResourceEditor,
-    isUrl,
   }
 
   const { display } = Memonite;
@@ -97,10 +95,6 @@ console.log('init module loaded');
       if (callNow) func.apply(context, args);
     };
   };
-
-  function isUrl(s) {
-    return s.startsWith('http:') || s.startsWith('https:')
-  }
 
   function getEditorUrl(resource) {
     const { editor, editor_url } = resource;

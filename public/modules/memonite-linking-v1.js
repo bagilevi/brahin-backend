@@ -1,7 +1,6 @@
 console.log('linking module loaded');
 
 (() => {
-  const { loadScript, loadCss, initResourceEditor, isUrl } = Memonite;
   const linking = Memonite.linking = {
     followLink,
     getLinkPropertiesForInsertion,
@@ -115,6 +114,10 @@ console.log('linking module loaded');
   // Is the href target handled by the same front-end?
   function isHrefToDifferentRealm(href) {
     return !isUrlSameOrigin(href);
+  }
+
+  function isUrl(s) {
+    return s.startsWith('http:') || s.startsWith('https:')
   }
 
   function isUrlSameOrigin(url) {
