@@ -1,24 +1,28 @@
-# README
+# Memonite-Brahin
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Experimental wiki software written in Rails and JavaScript - central Rails app.
 
-Things you may want to cover:
+This application is the central place for the _Brahin_ iteration.
 
-* Ruby version
+The _Brahin_ iteration is an experiment of a modular, progressive enhancement approach.
+You start with a HTML page, that can be viewed without any scripting.
+The page will contain information about which editor was used to create it,
+and that editor will be loaded.
+Every functionality is developed as a separate file, which could theretically be optional,
+e.g. linking between pages, single-page-app, storage, tree-navigation, search, etc.
 
-* System dependencies
+## Installation
 
-* Configuration
+This is a simple Rails application.
+It uses file storage in development, Redis in production.
 
-* Database creation
+    bundle install
+    bundle exec rails server
 
-* Database initialization
+## Deployment
 
-* How to run the test suite
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-* Services (job queues, cache servers, search engines, etc.)
+## Development
 
-* Deployment instructions
-
-* ...
+The main front-end bits are in `public/modules/`, not part of the Rails asset pipeline.

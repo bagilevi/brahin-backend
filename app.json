@@ -1,0 +1,14 @@
+{
+  "name": "Memonite-Brahin",
+  "description": "Quick and easy personal wiki - Brahin iteration",
+  "repository": "https://git.memonite.com/lev/memonite-brahin",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": [
+    "rediscloud:30"
+  ]
+}
