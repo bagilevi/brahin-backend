@@ -1,10 +1,8 @@
-# Memonite-Brahin
+# Memonite (main)
 
 Experimental wiki software written in Rails and JavaScript - central Rails app.
 
-This application is the central place for the _Brahin_ iteration.
-
-The _Brahin_ iteration is an experiment of a modular, progressive enhancement approach.
+This is an experiment of a modular, progressive enhancement approach to implement a wiki app.
 You start with a HTML page, that can be viewed without any scripting.
 The page will contain information about which editor was used to create it,
 and that editor will be loaded.
@@ -43,7 +41,7 @@ Allow everyone to view (read) but not edit (write):
 
 Allow reading with one password, editing with another:
 
-    HTTP_BASIC_AUTHENTICATION="read:joe:Pass1;write:mary:Pass1"
+    HTTP_BASIC_AUTHENTICATION="read:joe:Pass1;write:mary:Pass2"
 
 ### Force SSL
 
@@ -54,6 +52,8 @@ To force redirection to the https endpoint, set the env var:
 ## Development
 
 The main front-end bits are in `public/modules/`, not part of the Rails asset pipeline.
+
+The editor module is in the [memonite-slate-editor](https://github.com/bagilevi/memonite-slate-editor) repo.
 
 ## Licence
 
