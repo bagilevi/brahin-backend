@@ -54,3 +54,7 @@ To force redirection to the https endpoint, set the env var:
 ## Development
 
 The main front-end bits are in `public/modules/`, not part of the Rails asset pipeline.
+
+## Licence
+
+MIT - see [LICENCE](./LICENCE) file.
