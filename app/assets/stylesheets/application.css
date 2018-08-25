@@ -19,6 +19,24 @@
    font-weight: 400;
    font-size: 14px;
  }
-
+ body {
+   background: #F3F6F9;
+ }
+ #page {
+   max-width: 60em;
+   margin: 0 auto;
+   background: white;
+   padding: 3em;
+   padding-bottom: 10em;
+   min-height: 60vh;
+   border-radius: 3px;
+   box-shadow: 1px 1px 3px rgba(180, 180, 180, 0.5);
+ }
  .m-resource li > p { margin: 0.5em 0; }
  .m-resource .task > .task-contents > p { margin: 0.5em 0;  }
+
+ @media (min-width: 600px) {
+   .m-resource {
+
+   }
+ }

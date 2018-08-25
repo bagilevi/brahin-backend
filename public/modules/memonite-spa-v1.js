@@ -41,6 +41,7 @@
     }
 
     this.show = (key, initialize) => {
+      const parent = $('.m-resource').parent();
       $('.m-resource').hide().removeClass('m-resource')
 
       var el = cache[key]
@@ -51,7 +52,7 @@
       else {
         console.log('resource element not in cache')
         el = $('<div class="m-resource">')
-        $('body').append(el)
+        parent.append(el)
         cache[key] = el
         initialize(el)
       }
