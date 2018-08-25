@@ -44,15 +44,19 @@ console.log('init module loaded');
       if (!editor) {
         throw new Error(`Script loaded from "${resource.editor_url}" expected to define editor "${resource.editor}"`)
       }
-      const onChange = (newBody) => {
+      const change = (newBodyCallback) => {
+        const newBody = newBodyCallback();
         if (newBody != resource.body) {
           console.log('change', newBody)
           resource.body = newBody
           saveResource(resource, { body: newBody })
         }
       }
-      const debouncedOnChange = Memonite.debounce(onChange, 1000)
-      editor.init(el, debouncedOnChange)
+      const debouncedChange = debounceChange(change, 1000, 5000)
+      const onChange = (newBodyCallback) => {
+        debouncedChange(newBodyCallback)
+      }
+      editor.init(el, onChange)
     })
   }
 
@@ -110,6 +114,57 @@ console.log('init module loaded');
       timeout = setTimeout(later, wait);
       if (callNow) func.apply(context, args);
     };
+  };
+
+  // Debounce, but save within certain intervals, even if still editing.
+  function debounceChange(func, wait, interval) {
+    var timeout;           // Timout for delaying the latest change.
+    var intervalBeginTime; // Time we started measuring the latest interval.
+    var resetTimeout;      // Timeout for clearing the intervalBeginTime.
+
+    return function() {
+      cancelReset();
+
+      var currentTime = Date.now();
+      var context = this, args = arguments;
+
+      if (intervalBeginTime && currentTime - intervalBeginTime >= interval) {
+        if (timeout) { clearTimeout(timeout); timeout = null; }
+        func.apply(context, args);
+        intervalBeginTime = currentTime;
+
+        // End the interval if no changes received within <wait> milliseconds.
+        // If we don't do this, the next change will immediately trigger the original function.
+        scheduleReset();
+        return;
+      }
+
+      // Start an interval if not yet started.
+      if (!intervalBeginTime) intervalBeginTime = currentTime;
+
+      // Called when there's no new change for <wait> milliseconds.
+      var later = function() {
+        timeout = null;
+        reset();
+        func.apply(context, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+
+    function cancelReset() {
+      if (resetTimeout) { clearTimeout(resetTimeout); resetTimeout = null; }
+    }
+
+    function scheduleReset() {
+      if (resetTimeout) clearTimeout(resetTimeout);
+      resetTimeout = setTimeout(reset, wait)
+    }
+
+    function reset() {
+      if (resetTimeout) { clearTimeout(resetTimeout); resetTimeout = null; }
+      intervalBeginTime = null;
+    }
   };
 
   function isUrl(s) {

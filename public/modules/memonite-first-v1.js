@@ -4,7 +4,7 @@
     el.attr('contenteditable', 'true')
 
     el.on('input', () => {
-      onChange(el.html())
+      onChange(() => el.html())
     })
   }
 
