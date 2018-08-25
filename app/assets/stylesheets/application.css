@@ -13,3 +13,12 @@
  *= require_tree .
  *= require_self
  */
+
+ body, input, textarea {
+   font-family: Open Sans, sans-serif;
+   font-weight: 400;
+   font-size: 14px;
+ }
+
+ .m-resource li > p { margin: 0.5em 0; }
+ .m-resource .task > .task-contents > p { margin: 0.5em 0;  }
