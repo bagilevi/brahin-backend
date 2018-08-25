@@ -17,6 +17,7 @@ console.log('init module loaded');
       loadScript('/modules/memonite-spa-v1.js'),
       loadScript('/modules/memonite-storage-v1.js'),
     ]).then(() => {
+      console.log('core scripts loaded')
       initResourceEditorFromDocument()
     }).catch((err) => {
       console.error('Could not load all modules, editor cannot be initialized.')

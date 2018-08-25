@@ -6,6 +6,8 @@ console.log('storage module loaded');
     createEditorChangeReceiver,
   };
 
+  const unsavedChanges = new Set();
+
   // Returns a function that can be passed to the editor, to be called whenever
   // a change is made by the user.
   //
@@ -28,10 +30,11 @@ console.log('storage module loaded');
       if (newBody != resource.body) {
         console.log('change', newBody)
         resource.body = newBody
-        saveResource(resource, { body: newBody })
+        return saveResource(resource, { body: newBody })
       }
+      return Promise.resolve();
     }
-    const debouncedChange = debounceChange(recordChange, 1000, 5000)
+    const debouncedChange = debounceChange(recordChange, 1000, 2000)
     const handleChange = (getUpdatedBody) => {
       debouncedChange(getUpdatedBody);
     }
@@ -43,8 +46,27 @@ console.log('storage module loaded');
     var timeout;           // Timout for delaying the latest change.
     var intervalBeginTime; // Time we started measuring the latest interval.
     var resetTimeout;      // Timeout for clearing the intervalBeginTime.
+    var localUnsavedChanges = new Set();
+
+    function callOriginal(context, args) {
+      const changes = Array.from(localUnsavedChanges.values());
+      console.log('saving...', changes)
+      func.apply(context, args).then((ret) => {
+        for (var change of changes) {
+          localUnsavedChanges.delete(change);
+          unsavedChanges.delete(change);
+          updateOnUnloadEventHandler();
+        }
+        console.log('saved.', ret, changes)
+      });
+    }
 
     return function() {
+      const changeId = generateChangeId()
+      unsavedChanges.add(changeId);
+      localUnsavedChanges.add(changeId);
+      updateOnUnloadEventHandler();
+
       cancelReset();
 
       var currentTime = Date.now();
@@ -52,7 +74,7 @@ console.log('storage module loaded');
 
       if (intervalBeginTime && currentTime - intervalBeginTime >= interval) {
         if (timeout) { clearTimeout(timeout); timeout = null; }
-        func.apply(context, args);
+        callOriginal(context, args)
         intervalBeginTime = currentTime;
 
         // End the interval if no changes received within <wait> milliseconds.
@@ -68,8 +90,9 @@ console.log('storage module loaded');
       var later = function() {
         timeout = null;
         reset();
-        func.apply(context, args);
+        callOriginal(context, args)
       };
+      console.log('debouncing save...')
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
     };
@@ -90,12 +113,37 @@ console.log('storage module loaded');
   }; // end of debounceChange
 
   function saveResource(resource, updatedAttributes) {
-    const data = _.assign({ authenticity_token: authenticityToken }, updatedAttributes)
+    return new Promise((resolve, reject) => {
+      const data = _.assign({ authenticity_token: authenticityToken }, updatedAttributes)
 
-    $.ajax({
-      url: resource.path,
-      method: 'patch',
-      data: data
+      $.ajax({
+        url: resource.path,
+        method: 'patch',
+        data: data,
+        success: () => {
+          console.log('saved successfully');
+          resolve();
+        },
+        error: (err) => {
+          console.error('error while saving', err);
+          reject(err);
+        },
+      })
     })
+  }
+
+  var lastChangeId = 0;
+  function generateChangeId() {
+    return ++lastChangeId;
+  }
+
+  function updateOnUnloadEventHandler() {
+    if (unsavedChanges.size === 0) {
+      window.onbeforeunload = null;
+    } else if (!window.onbeforeunload) {
+      window.onbeforeunload = function() {
+        return 'There are unsaved changes, which might be lost if you close the window, reload or navigate away. Do you wish to continue anyway?'
+      };
+    }
   }
 })()
