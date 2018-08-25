@@ -1,4 +1,5 @@
 class ResourcesController < ApplicationController
+   force_ssl if ENV['FORCE_SSL']
    before_action :authenticate_for_reading, only: :show
    before_action :authenticate_for_writing, only: [:create, :patch]
 

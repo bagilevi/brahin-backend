@@ -23,7 +23,9 @@ It uses file storage in development, Redis in production.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-## Password-protect
+## Configuration
+
+### Password-protect
 
 By default, everyone who has the URL can view and edit documents.
 
@@ -42,6 +44,12 @@ Allow everyone to view (read) but not edit (write):
 Allow reading with one password, editing with another:
 
     HTTP_BASIC_AUTHENTICATION="read:joe:Pass1;write:mary:Pass1"
+
+### Force SSL
+
+To force redirection to the https endpoint, set the env var:
+
+    FORCE_SSL=1
 
 ## Development
 
