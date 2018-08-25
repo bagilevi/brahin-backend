@@ -29,6 +29,7 @@
     swapper.show(resource.url, (el) => {
       // Callback to initialize the DOM element if wasn't in the cache
       el.html(resource.body)
+      document.title = resource.title || 'Memonite'; // FIXME
       initResourceEditor(resource, el)
     })
   }
@@ -47,6 +48,7 @@
       var el = cache[key]
       if (el) {
         console.log('resource element found in cache')
+        document.title = el.find('h1').first().text() || 'Memonite'; // FIXME
         el.addClass('m-resource').show()
       }
       else {
