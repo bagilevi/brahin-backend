@@ -24,7 +24,6 @@ console.log('init module loaded');
     })
   })
 
-
   // Find the main resource on the page and load its editor
   function initResourceEditorFromDocument() {
     const el = $('.m-resource').first()

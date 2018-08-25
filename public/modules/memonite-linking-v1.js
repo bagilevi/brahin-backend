@@ -10,6 +10,10 @@ console.log('linking module loaded');
   window.onpopstate = onPopState
 
   function followLink(link, opts = {}) {
+    if (isHrefToDifferentRealm(link.href)) {
+      window.open(link.href);
+      return;
+    }
     if (opts.ifNewResource) {
       if (isUrl(link.href)) return;
       createResourceNX(link.href, link.label).then((resource) => {
@@ -106,5 +110,18 @@ console.log('linking module loaded');
   function logError(err, reject) {
     console.error(err.error, err.params, err.reason, err.original);
     if (reject) reject(err);
+  }
+
+  // Is the href target handled by the same front-end?
+  function isHrefToDifferentRealm(href) {
+    return !isUrlSameOrigin(href);
+  }
+
+  function isUrlSameOrigin(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    if (!window.location.origin) throw new Error('window.location.origin missing');
+    if (!a.origin) throw new Error('a.origin missing');
+    return a.origin === window.location.origin;
   }
 })()
