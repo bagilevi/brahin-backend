@@ -8,6 +8,8 @@ require "sprockets/railtie"
 Bundler.require(*Rails.groups)
 
 module Memonite
+  VERSION = '0.2.0'.freeze
+
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
