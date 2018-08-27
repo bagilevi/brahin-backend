@@ -10,6 +10,15 @@ console.log('init module loaded');
 
   const { display } = Memonite;
 
+  window.onerror = function(message, url, lineNumber) {
+    var container = $('#error-container').first();
+    if (container.length === 0) container = $('<div id="error-container">').appendTo($('body'))
+    const msgEl = $('<div class="error-flash">').append($('<p>').text(message));
+    container.append(msgEl);
+    msgEl.fadeOut({ duration: 10000 }, () => msgEl.remove());
+    msgEl.on('click', () => msgEl.remove())
+  }
+
   $(document).ready(() => {
     Promise.all([
       loadScript('/modules/memonite-ui-v1.js'),

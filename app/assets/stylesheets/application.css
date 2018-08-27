@@ -77,3 +77,23 @@
 
  .m-resource li > p { margin: 0.5em 0; }
  .m-resource .task > .task-contents > p { margin: 0.5em 0;  }
+
+ #error-container {
+   position: fixed;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   text-align: left;
+ }
+ .error-flash {
+   margin: 2px;
+ }
+ .error-flash > p {
+   background: #C22;
+   color: white;
+   display: inline-block;
+   margin: 0;
+   padding: 2px;
+   border-radius: 2px;
+   font-size: 80%;
+ }
