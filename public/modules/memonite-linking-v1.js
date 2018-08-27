@@ -9,10 +9,6 @@ console.log('linking module loaded');
   window.onpopstate = onPopState
 
   function followLink(link, opts = {}) {
-    if (isHrefToDifferentRealm(link.href)) {
-      window.open(link.href);
-      return;
-    }
     if (opts.ifNewResource) {
       if (isUrl(link.href)) return;
       createResourceNX(link.href, link.label).then((resource) => {
@@ -21,6 +17,10 @@ console.log('linking module loaded');
         }
         return;
       });
+      return;
+    }
+    if (isHrefToDifferentRealm(link.href)) {
+      window.open(link.href);
       return;
     }
     if (!Memonite.spa) {
