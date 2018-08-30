@@ -1,6 +1,14 @@
 console.log('init module loaded');
 
-(() => {
+require.config({
+  baseUrl: "/modules/",
+  paths: {
+    'jquery': '/jquery/jquery-3.3.1.min',
+    'lodash': '/lodash/lodash.min',
+  }
+})
+
+define(['jquery'], ($) => {
   const Memonite = window.Memonite = {
     VERSION: '0.2.1',
     editors: [],
@@ -9,6 +17,8 @@ console.log('init module loaded');
     loadPluginScript,
     loadPluginCss,
     initResourceEditor,
+    define,
+    require,
   }
 
   const { display } = Memonite;
@@ -32,7 +42,7 @@ console.log('init module loaded');
       console.log('core scripts loaded')
       initResourceEditorFromDocument()
     }).catch((err) => {
-      console.error('Could not load all modules, editor cannot be initialized.')
+      console.error('Could not load all modules, editor cannot be initialized.', err)
     })
   })
 
@@ -51,12 +61,13 @@ console.log('init module loaded');
   }
 
   function initResourceEditor(resource, el) {
-    loadScript(getEditorUrl(resource)).then(() => {
-      const editor = Memonite.editors[resource.editor]
+    const scriptUrl = getEditorUrl(resource)
+    require([scriptUrl], (editorLoader) => {
+      console.log('editorLoader', editorLoader)
+      const editor = editorLoader(Memonite)
       if (!editor) {
         throw new Error(`Script loaded from "${resource.editor_url}" expected to define editor "${resource.editor}"`)
       }
-
       const changeReceiver = Memonite.storage.createEditorChangeReceiver(resource);
       editor.init(el, changeReceiver);
     })
@@ -95,7 +106,13 @@ console.log('init module loaded');
   }
 
   function loadPluginScript(name, version) {
-    return loadScript(`/plugin?name=${name}-v${version}&type=js`)
+    return new Promise((resolve, reject) => {
+      require([`/plugin?name=${name}-v${version}&type=js`], (result) => {
+        console.log('loadPluginScript', name, '=> ', result)
+        result(Memonite);
+        resolve();
+      })
+    })
   }
 
   function loadPluginCss(name, version) {
@@ -123,4 +140,4 @@ console.log('init module loaded');
     return `/plugin?name=${editor}&url=${editor_url}&type=js`
   }
 
-})();
+})

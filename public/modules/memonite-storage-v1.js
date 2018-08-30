@@ -1,7 +1,7 @@
 // Code related to saving to storage.
 console.log('storage module loaded');
 
-(() => {
+define((require, exports, module) => ((Memonite) => {
   const storage = Memonite.storage = {
     createEditorChangeReceiver,
   };
@@ -149,4 +149,4 @@ console.log('storage module loaded');
       };
     }
   }
-})()
+}))

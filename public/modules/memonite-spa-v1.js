@@ -6,7 +6,7 @@
 // It keeps the initialized editors in the DOM and hides them when we navigate away,
 // and shows them again when navigate back.
 
-(() => {
+define((require, exports, module) => ((Memonite) => {
   const { initResourceEditor } = Memonite;
   const swapper = new Swapper();
   const spa = Memonite.spa = {
@@ -60,4 +60,4 @@
       }
     }
   }
-})()
+}))

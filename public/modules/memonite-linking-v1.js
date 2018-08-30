@@ -1,6 +1,6 @@
 console.log('linking module loaded');
 
-(() => {
+define((require, exports, module) => ((Memonite) => {
   const linking = Memonite.linking = {
     followLink,
     getLinkPropertiesForInsertion,
@@ -127,4 +127,4 @@ console.log('linking module loaded');
     if (!a.origin) throw new Error('a.origin missing');
     return a.origin === window.location.origin;
   }
-})()
+}))

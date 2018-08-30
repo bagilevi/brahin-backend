@@ -1,6 +1,6 @@
 console.log('ui module loaded');
 
-(() => {
+define(['jquery', '/jquery-ui/jquery-ui.min.js'], ($, jui) => ((Memonite) => {
   const { loadScript, loadCss, loadPluginCss } = Memonite;
   const ui = Memonite.ui = {
     prompt,
@@ -9,11 +9,10 @@ console.log('ui module loaded');
 
   loadJqueryUi().then(() => {
     // openSampleDialog()
-  })
+  }).catch(console.error)
 
   function loadJqueryUi() {
     return Promise.all([
-      loadScript('/jquery-ui/jquery-ui.min.js'),
       loadCss('/jquery-ui/jquery-ui.min.css'),
       loadCss('/jquery-ui/jquery-ui.structure.min.css'),
       loadCss('/jquery-ui/jquery-ui.theme.min.css'),
@@ -75,4 +74,4 @@ console.log('ui module loaded');
     })
   }
 
-})()
+}))
