@@ -8,7 +8,7 @@ class PluginController < ApplicationController
     name = params[:name]
     type = params[:type]
 
-    url = "#{ENV['PLUGIN_BASE_URL']}#{name}#{".#{type}" if type.present?}"
+    url = "#{ENV['PLUGIN_BASE_URL'] || 'https://memonite.com/modules/'}#{name}#{".#{type}" if type.present?}"
 
     serve_from_url(url, type) ||
       render_not_found
