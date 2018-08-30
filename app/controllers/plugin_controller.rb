@@ -6,25 +6,15 @@ class PluginController < ApplicationController
 
   def show
     name = params[:name]
-    url  = params[:url]
-    type = params[:type] || 'js'
+    type = params[:type]
 
-    serve_from_file(name, type) ||
-      serve_from_file(name.sub('-v0.2.1', '-v1'), type) ||
-      serve_from_url(url, type) ||
+    url = "#{ENV['PLUGIN_BASE_URL']}#{name}#{".#{type}" if type.present?}"
+
+    serve_from_url(url, type) ||
       render_not_found
   end
 
   private
-
-  def serve_from_file(name, type)
-    return if name.blank?
-    path = Rails.root.join('public', 'modules', "#{name}.#{type}").to_s
-    if File.exist?(path)
-      send_file(path, filename: "#{name}.#{type}", type: mime_type_from(type))
-      true
-    end
-  end
 
   def serve_from_url(url, type)
     return if url.blank?
@@ -42,7 +32,7 @@ class PluginController < ApplicationController
     case type
     when 'js' then 'application/javascript'
     when 'css' then 'text/css'
-    else raise "unhandled type: #{type.inspect}"
+    else 'text/plain'
     end
   end
 

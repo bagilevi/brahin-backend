@@ -8,7 +8,7 @@
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
 <%= javascript_tag "var authenticityToken = '#{form_authenticity_token}';" if protect_against_forgery? %>
-<script src="/require.js" data-main="/modules/memonite-init-v1"></script>
+<script src="/require.js" data-main="/init"></script>
 <% end %>
 </head>
 <body>
