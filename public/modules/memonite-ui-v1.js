@@ -1,11 +1,11 @@
 console.log('ui module loaded');
 
 (() => {
-  const { loadScript, loadCss } = Memonite;
+  const { loadScript, loadCss, loadPluginCss } = Memonite;
   const ui = Memonite.ui = {
     prompt,
   };
-  loadCss('/modules/memonite-ui-v1.css')
+  loadPluginCss('memonite-ui', Memonite.VERSION)
 
   loadJqueryUi().then(() => {
     // openSampleDialog()

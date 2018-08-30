@@ -2,9 +2,12 @@ console.log('init module loaded');
 
 (() => {
   const Memonite = window.Memonite = {
+    VERSION: '0.2.1',
     editors: [],
     loadScript,
     loadCss,
+    loadPluginScript,
+    loadPluginCss,
     initResourceEditor,
   }
 
@@ -21,10 +24,10 @@ console.log('init module loaded');
 
   $(document).ready(() => {
     Promise.all([
-      loadScript('/modules/memonite-ui-v1.js'),
-      loadScript('/modules/memonite-linking-v1.js'),
-      loadScript('/modules/memonite-spa-v1.js'),
-      loadScript('/modules/memonite-storage-v1.js'),
+      loadPluginScript('memonite-ui',      Memonite.VERSION),
+      loadPluginScript('memonite-linking', Memonite.VERSION),
+      loadPluginScript('memonite-spa',     Memonite.VERSION),
+      loadPluginScript('memonite-storage', Memonite.VERSION),
     ]).then(() => {
       console.log('core scripts loaded')
       initResourceEditorFromDocument()
@@ -91,6 +94,14 @@ console.log('init module loaded');
     })
   }
 
+  function loadPluginScript(name, version) {
+    return loadScript(`/plugin?name=${name}-v${version}&type=js`)
+  }
+
+  function loadPluginCss(name, version) {
+    return loadCss(`/plugin?name=${name}-v${version}&type=css`)
+  }
+
   function debounce(func, wait, immediate) {
     var timeout;
     return function() {
@@ -107,10 +118,9 @@ console.log('init module loaded');
   };
 
   function getEditorUrl(resource) {
-    const { editor, editor_url } = resource;
-    if (editor_url) return editor_url;
+    const { editor, editor_url } = resource
     if (!editor) throw new Error('resource does not have "editor" property')
-    return `/assets/${editor}.js`
+    return `/plugin?name=${editor}&url=${editor_url}&type=js`
   }
 
 })();
