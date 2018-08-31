@@ -1,3 +1,88 @@
+body, input, textarea {
+  font-family: Open Sans, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+body {
+  background: #F3F6F9;
+  padding: 0;
+  margin: 0;
+}
+
+#page {
+  min-height: 60vh;
+  background: white;
+  padding: 7px;
+}
+#page-footer {
+  border-top: solid 1px #EEE;
+  padding: 4px;
+  color: #BBB;
+  font-size: 80%;
+  padding-bottom: 56px;
+}
+#page-footer a {
+  color: #BBB;
+  text-decoration: none;
+}
+#page-footer a:hover {
+  color: #689;
+  text-decoration: underline;
+}
+#page-footer > * {
+  float: left;
+  margin-right: 14px;
+}
+
+@media (min-width: 20em) {
+  #page {
+    padding: 14px;
+  }
+}
+@media (min-width: 50em) {
+  body {
+    margin: 7px;
+  }
+  #page {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 42px;
+    padding-bottom: 140px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 3px rgba(180, 180, 180, 0.5);
+  }
+  #page-footer {
+    max-width: 924px; /* align with #page (width + 2x padding) */
+    margin: 0 auto;
+    padding: 4px 0;
+    padding-bottom: 56px;
+  }
+}
+
+.m-resource li > p { margin: 0.5em 0; }
+.m-resource .task > .task-contents > p { margin: 0.5em 0;  }
+
+#error-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: left;
+}
+.error-flash {
+  margin: 2px;
+}
+.error-flash > p {
+  background: #C22;
+  color: white;
+  display: inline-block;
+  margin: 0;
+  padding: 2px;
+  border-radius: 2px;
+  font-size: 80%;
+}
+
+
 @font-face {
   font-family: 'Open Sans';
   src: url('/fonts/OpenSans-Bold.woff') format('woff');

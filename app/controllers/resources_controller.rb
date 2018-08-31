@@ -21,15 +21,23 @@ class ResourcesController < ApplicationController
     end
   end
 
+  # A static cachable page served to the service worker for any resource endpoint
+  # with no actual resource but with the purpose of initialising the SPA.
+  def spa_dummy
+    @spa_dummy = true
+  end
+
   def create
     @resource = Resource.find_by_path(params[:path])
 
     if (@resource)
-      format.html do
-        render text: 'Already exists'
-      end
-      format.json do
-        render json: { error: 'Already exists' }, status: 409
+      respond_to do
+        format.html do
+          render text: 'Already exists'
+        end
+        format.json do
+          render json: { error: 'Already exists' }, status: 409
+        end
       end
       return
     end

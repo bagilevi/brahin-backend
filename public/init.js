@@ -8,6 +8,6 @@ require.config({
   }
 })
 
-define(['/plugin?name=memonite-core-v0.2.1&type=js'], () => {
+define(['/memonite-core-v0.2.1.js'], () => {
 
 })
