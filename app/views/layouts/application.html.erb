@@ -7,10 +7,15 @@
 <% if @authorized_to_write || @spa_dummy %>
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
+<%= javascript_tag "const MEMONITE_VERSION = '#{memonite_version}';" %>
 <script src="/require.js" data-main="/init"></script>
 <% end %>
 </head>
 <body>
 <%= yield %>
+<footer id="page-footer">
+  <div><a href="https://memonite.com/" target="blank">Memonite</a> v<%= memonite_version %></div>
+  <div><a href="https://memonite-info.herokuapp.com/user-guide" target="blank">User Guide</a></div>
+</footer>
 </body>
 </html>

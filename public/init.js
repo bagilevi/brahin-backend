@@ -7,7 +7,8 @@ require.config({
     'lodash': '/lodash/lodash.min',
   }
 })
+console.log('MEMONITE_VERSION', MEMONITE_VERSION)
 
-define(['/memonite-core-v0.2.1.js'], () => {
+define([`/memonite-core-v${MEMONITE_VERSION}.js`], () => {
 
 })
