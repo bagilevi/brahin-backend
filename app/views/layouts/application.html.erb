@@ -7,7 +7,12 @@
 <% if @authorized_to_write || @spa_dummy %>
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
-<%= javascript_tag "const MEMONITE_VERSION = '#{memonite_version}';" %>
+<%= javascript_tag <<~JS.strip
+const MEMONITE_START_TIME = performance.now()
+const MEMONITE_VERSION = '#{memonite_version}'
+const MEMONITE_PLUGIN_PATH = #{JSON.generate(ENV['PLUGIN_BASE_URL'] || 'https://memonite.com/modules/')}
+JS
+%>
 <script src="/require.js" data-main="/init"></script>
 <% end %>
 </head>

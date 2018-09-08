@@ -1,7 +1,7 @@
 console.log('init loaded');
 
 require.config({
-  baseUrl: "/modules/",
+  baseUrl: MEMONITE_PLUGIN_PATH,
   paths: {
     'jquery': '/jquery/jquery-3.3.1.min',
     'lodash': '/lodash/lodash.min',
