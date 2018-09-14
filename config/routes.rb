@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   mount MySinatraApp => '/'
 
   get '/_spa_dummy', to: 'resources#spa_dummy'
+  get '/_local(/*path)', to: 'resources#local'
 
   get '/(*path)', to: 'resources#show'
   post '/(*path)', to: 'resources#create'

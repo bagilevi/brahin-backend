@@ -9,7 +9,7 @@ class ResourcesController < ApplicationController
       authenticate_for_writing
     end
 
-    @authorized_to_write = authorized_to_write?
+    @load_frontend = authorized_to_write?
 
     @resource = Resource.find_or_initialize_by_path(params[:path])
 
@@ -24,7 +24,12 @@ class ResourcesController < ApplicationController
   # A static cachable page served to the service worker for any resource endpoint
   # with no actual resource but with the purpose of initialising the SPA.
   def spa_dummy
-    @spa_dummy = true
+    @load_frontend = true
+  end
+
+  # A static page that triggers local-store mode.
+  def local
+    @load_frontend = true
   end
 
   def create
