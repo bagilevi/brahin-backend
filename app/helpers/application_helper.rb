@@ -1,13 +1,13 @@
 module ApplicationHelper
-  def memonite_version
+  def brahin_version
     if Rails.env.development?
-      memonite_version_from_file
+      brahin_version_from_file
     else
-      $memonite_version ||= ENV['MEMONITE_VERSION'] || memonite_version_from_file
+      $brahin_version ||= ENV['BRAHIN_VERSION'] || brahin_version_from_file
     end
   end
 
-  def memonite_version_from_file
+  def brahin_version_from_file
     [
       Rails.root.join('tmp', 'VERSION').to_s,
       Rails.root.join('VERSION').to_s,

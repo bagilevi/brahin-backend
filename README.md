@@ -1,4 +1,4 @@
-# Memonite (main)
+# Brahin Backend
 
 Experimental wiki software written in Rails and JavaScript - central Rails app.
 
@@ -53,7 +53,7 @@ To force redirection to the https endpoint, set the env var:
 
 The main front-end bits are in `public/modules/`, not part of the Rails asset pipeline.
 
-The editor module is in the [memonite-slate-editor](https://github.com/bagilevi/memonite-slate-editor) repo.
+The editor module is in the [brahin-slate-editor](https://github.com/bagilevi/brahin-slate-editor) repo.
 
 ## Licence
 

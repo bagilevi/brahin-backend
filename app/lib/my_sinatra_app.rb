@@ -2,8 +2,8 @@ require 'net/http'
 require 'uri'
 
 class MySinatraApp < Sinatra::Base
-  get %r{/(memonite-.*\.(js|css))} do |name, ext|
-    base_url = ENV['PLUGIN_BASE_URL'] || 'https://memonite.com/modules/'
+  get %r{/(brahin-.*\.(js|css))} do |name, ext|
+    base_url = ENV['BRAHIN_FRONTEND_URL'] || 'https://brahin.online/modules'
     url = "#{base_url}#{name}"
     content = get_content_from_url(url)
     render_content(content, name, ext) || render_not_found

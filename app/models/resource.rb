@@ -38,8 +38,8 @@ class Resource
     new(
       id: rand(10**20),
       path: path,
-      editor: 'memonite-slate-editor-v1',
-      editor_url: ENV.fetch('MEMONITE_SLATE_EDITOR_URL', '/modules/memonite-slate-editor-v1.js'),
+      editor: 'brahin-slate-editor',
+      editor_url: ENV.fetch('BRAHIN_SLATE_EDITOR_URL', '/modules/brahin-slate-editor.js'),
       body: ''
     ).tap do |resource|
       resource.init_plain_html_page(opts)

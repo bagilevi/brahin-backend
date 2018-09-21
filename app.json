@@ -1,7 +1,7 @@
 {
-  "name": "Memonite-Brahin",
-  "description": "Quick and easy personal wiki - Brahin iteration",
-  "repository": "https://git.memonite.com/lev/memonite-brahin",
+  "name": "Brahin",
+  "description": "Wiki software",
+  "repository": "https://github.com/bagilevi/brahin-backend",
   "formation": {
     "web": {
       "quantity": 1,

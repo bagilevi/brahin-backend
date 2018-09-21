@@ -7,7 +7,7 @@ require "sprockets/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module Memonite
+module Brahin
   VERSION = '0.2.0'.freeze
 
   class Application < Rails::Application
