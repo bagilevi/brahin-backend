@@ -10,6 +10,6 @@ require.config({
 })
 console.log('MEMONITE_VERSION', MEMONITE_VERSION)
 
-define([`${MEMONITE_PLUGIN_PATH}/memonite-core-v${MEMONITE_VERSION}.js`], () => {
-
+define([`${MEMONITE_PLUGIN_PATH}/memonite-core-v${MEMONITE_VERSION}.js`], (coreFn) => {
+  coreFn()
 })
