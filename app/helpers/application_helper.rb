@@ -8,6 +8,12 @@ module ApplicationHelper
   end
 
   def memonite_version_from_file
-    File.read(Rails.root.join('VERSION').to_s).strip
+    [
+      Rails.root.join('tmp', 'VERSION').to_s,
+      Rails.root.join('VERSION').to_s,
+    ].each do |version_fn|
+      next if !File.exist?(version_fn)
+      return File.read(version_fn).strip
+    end
   end
 end

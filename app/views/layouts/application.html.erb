@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <%= stylesheet_link_tag    '/main.css', media: 'all' %>
 <% if @load_frontend %>
+<% plugin_base_url  = ENV['PLUGIN_BASE_URL'] || 'https://memonite.com/modules' %>
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
 <%= javascript_tag <<~JS.strip
 const MEMONITE_START_TIME = performance.now()
 const MEMONITE_VERSION = '#{memonite_version}'
-const MEMONITE_PLUGIN_PATH = #{JSON.generate(ENV['PLUGIN_BASE_URL'] || 'https://memonite.com/modules/')}
+const MEMONITE_PLUGIN_PATH = #{JSON.generate(plugin_base_url)}
 JS
 %>
-<script src="/require.js" data-main="/init"></script>
+<script src="/require.js" data-main="<%= plugin_base_url %>/memonite-init-v<%= memonite_version %>"></script>
 <% end %>
 </head>
 <body>
