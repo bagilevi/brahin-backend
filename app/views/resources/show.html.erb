@@ -5,4 +5,5 @@
   data-m-id="<%= @resource.id %>"
   data-m-editor="<%= @resource.editor %>"
   data-m-editor-url="<%= @resource.editor_url %>"
+  data-attributes="<%= JSON.generate(@resource_attributes.except(:body)) %>"
 ><%= @resource.body.html_safe %></div></div>

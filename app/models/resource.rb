@@ -23,13 +23,6 @@ class Resource
     end
   end
 
-  def self.patch_by_path(params)
-    instance = find_or_initialize_by_path(params[:path])
-    instance.body = params[:body] if params.has_key?(:body)
-    instance.title = params[:title] if params.has_key?(:title)
-    instance.save!
-  end
-
   def self.find_or_initialize_by_path(path)
     find_by_path(path) || initialize_by_path(path)
   end
@@ -63,8 +56,13 @@ class Resource
     Digest::MD5.hexdigest(path)
   end
 
-  def init_plain_html_page(title: '')
-    self.body = "<h1>#{CGI.escapeHTML(title)}</h1><p></p>"
+  def patch(params)
+    self.body = params[:body] if params.has_key?(:body)
+    self.title = params[:title] if params.has_key?(:title)
+  end
+
+  def init_plain_html_page(title: '', body: '')
+    self.body = body.presence || "<h1>#{CGI.escapeHTML(title)}</h1><p></p>"
   end
 
   def save!
