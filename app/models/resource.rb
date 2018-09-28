@@ -8,20 +8,9 @@ class Resource
   attribute :editor_url
   attribute :body
 
-  class << self
-    attr_writer :storage
-
-    def storage
-      @storage ||= build_storage
-    end
-
-    def build_storage
-      return FileStorage.new if ENV['STORAGE'] == 'file'
-      return RedisStorage.new if ENV['STORAGE'] == 'redis'
-      return FileStorage.new if ENV['RAILS_ENV'].in?(['development', 'test'])
-      return RedisStorage.new
-    end
-  end
+  include Storage
+  BODY_PART = 'content.html'
+  META_PART = 'meta.yml'
 
   def self.find_or_initialize_by_path(path)
     find_by_path(path) || initialize_by_path(path)
@@ -43,13 +32,25 @@ class Resource
     initialize_by_path(params[:path], params.except(:path))
   end
 
+  def self.patch_by_path(params)
+    resource = find_or_initialize_by_path(params[:path])
+    resource.patch(params)
+    resource.save!
+  end
+
   def self.find_by_path(path)
-    attributes = storage.get(path.presence)
-    new(attributes.merge(path: path)) if attributes.present?
+    meta_payload = storage.get(path, META_PART)
+    body = storage.get(path, BODY_PART)
+    return nil if meta_payload.nil? && body.nil?
+
+    attributes = meta_payload.present? ? YAML.load(meta_payload).symbolize_keys : {}
+    attributes[:body] = body
+    new(attributes.merge(path: path))
   end
 
   def self.save(path, attributes)
-    storage.put(path.presence, attributes)
+    storage.put(path, META_PART, YAML.dump(attributes.except(:body).stringify_keys))
+    storage.put(path, BODY_PART, attributes[:body])
   end
 
   def self.digest(path)

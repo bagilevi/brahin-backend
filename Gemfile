@@ -36,6 +36,8 @@ gem 'postgresql'
 gem 'virtus'
 gem 'redis'
 gem 'sinatra'
+gem 'dry-types'
+gem 'dry-struct'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

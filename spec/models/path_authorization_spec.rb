@@ -11,13 +11,11 @@ describe PathAuthorization do
   end
 
   it 'creates authorization & check' do
-    expect {
-      PathAuthorization.create!(
-        path: '/foo',
-        token: 'Tkn1',
-        level: AccessLevel::ADMIN,
-      )
-    }.to change { PathAuthorization.count }.by(1)
+    PathAuthorization.create!(
+      path: '/foo',
+      token: 'Tkn1',
+      level: AccessLevel::ADMIN,
+    )
 
     a = PathAuthorization.get('/foo', 'Tkn1')
     expect(a.can_write?).to be true

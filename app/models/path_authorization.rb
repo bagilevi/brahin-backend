@@ -1,21 +1,28 @@
-class PathAuthorization < ApplicationRecord
+class PathAuthorization < Dry::Struct
   include AccessLevel
+  include Storage
 
-  def self.get(input_path, input_token)
-    records = where(path: match_paths(input_path)).all.to_a
+  transform_keys(&:to_sym)
+  attribute :path, ResourcePath
+  attribute :level, Types::Strict::Integer
+  attribute :token, Types::Strict::String.optional
+
+  def self.get(path, token)
+    path = ResourcePath[path]
+    records = path.with_ancestors.flat_map { |iter_path| Access.find(iter_path)&.authorizations }.compact
 
     if records.none? { |r| r.level == ADMIN }
       # Nobody owns this site => first visitor takes ownership
-      record = create!(path: '/', level: ADMIN, token: input_token)
+      record = create!(path: '/', level: ADMIN, token: token)
       records = [record]
     end
 
-    return Authorization.new(records, input_path, input_token)
+    return Authorization.new(records, path, token)
   end
 
-  def self.find_highest_path(input_path, input_token)
-    where(path: match_paths(input_path), token: input_token).pluck(:path).min_by(&:length)
-  end
+  # def self.find_highest_path(path, token)
+  #   where(path: match_paths(path), token: token).pluck(:path).min_by(&:length)
+  # end
 
   def self.update_all_for_path(path, entries)
     transaction do
@@ -33,21 +40,25 @@ class PathAuthorization < ApplicationRecord
     end
   end
 
-  def self.match_paths(path)
-    elements = path == '/' ? [""] : path.split('/')
-    (0 .. elements.size - 1).map { |i| i == 0 ? '/' : elements[0 .. i].join('/') }
+  # def self.match_paths(path)
+  #   elements = path == '/' ? [""] : path.split('/')
+  #   (0 .. elements.size - 1).map { |i| i == 0 ? '/' : elements[0 .. i].join('/') }
+  # end
+
+  def self.delete_all
+    Access.delete_all
   end
 
-  def path_nests?(other_path)
-    return false if other_path == '/'
-    return true if path == '/'
-    other_path.starts_with?("#{path}/")
-  end
+  def self.create!(path:, level:, token:)
+    path = ResourcePath[path]
 
-  def path_nested_under?(other_path)
-    return false if path == '/'
-    return true if other_path == '/'
-    path.starts_with?("#{other_path}/")
+    # storage.put(path, { level: level, token: token })
+    access = Access.find_or_initialize(path)
+    record = PathAuthorization.new(path: path, level: level, token: token)
+    access.authorizations << record
+    access.save!
+
+    record
   end
 
   class AuthorizationBase
@@ -61,16 +72,16 @@ class PathAuthorization < ApplicationRecord
 
   class Authorization < AuthorizationBase
     def initialize(records, path, token)
+      pp records
       @records = records
-      container_path = @records.select { |r| r.level == ADMIN }.map(&:path).max_by(&:length)
-      @records.reject! { |r| r.path_nests?(container_path) }
+      container_path = @records.select { |r| r.level == ADMIN }.map(&:path).max_by(&:depth)
+      @records.reject! { |r| r.path.nests?(container_path) }
 
       @path = path
       @token = token
     end
 
     def can?(wanted_level)
-
       matching_records = @records.select { |r| r.token.nil? || r.token == @token }
       other_records = @records - matching_records
 
@@ -85,7 +96,7 @@ class PathAuthorization < ApplicationRecord
         # - current user cannot create /users/joe/foo
         # `authorizing_record` for /users with CREATE level is found for the current user,
         # but another user already has rights /users/joe which starts with /users/
-        return false if other_records.any? { |r| r.path_nested_under?(authorizing_record.path) }
+        return false if other_records.any? { |r| r.path.nested_under?(authorizing_record.path) }
       end
 
       true

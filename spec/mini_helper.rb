@@ -6,6 +6,8 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/dependencies'
 require 'virtus'
+require 'dry-types'
+require 'dry-struct'
 
 ActiveSupport::Dependencies.autoload_paths += %w(
   app/models

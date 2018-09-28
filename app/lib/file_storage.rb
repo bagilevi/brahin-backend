@@ -1,33 +1,32 @@
 # Storage backend preferred for development since it's easy to inspect.
 #
 class FileStorage
-  def get(path)
-    yamlpath, htmlpath = storage_paths(path)
-    if File.exist?(yamlpath)
-      attributes = YAML.load(File.read(yamlpath)).symbolize_keys
-      if File.exist?(htmlpath)
-        attributes[:body] = File.read(htmlpath)
-      end
-      attributes
+  def get(path, part)
+    sp = storage_path(path, part)
+    if File.exist?(sp)
+      File.read(sp)
     end
   end
 
-  def put(path, attributes)
-    yamlpath, htmlpath = storage_paths(path)
-    FileUtils.mkdir_p(File.dirname(yamlpath))
-    File.open(htmlpath, 'w') do |f|
-      f.write(attributes[:body])
+  def put(path, part, payload)
+    sp = storage_path(path, part)
+    FileUtils.mkdir_p(File.dirname(sp))
+    File.open(sp, 'w') do |f|
+      f.write(payload)
     end
-    File.open(yamlpath, 'w') do |f|
-      f.write(YAML.dump(attributes.except(:body).stringify_keys))
+  end
+
+  def delete_all_parts(part)
+    Dir[root.join('data', '**', part)].each do |fn|
+      File.delete(fn)
     end
   end
 
   private
 
-  def storage_paths(path)
-    base = root.join('data', sanitize_path(path)).to_s
-    ["#{base}.yaml", "#{base}.html"]
+  def storage_path(path, part_type)
+    path = ResourcePath[path]
+    root.join('data', *path.elements, part_type).to_s
   end
 
   def sanitize_path(path)
