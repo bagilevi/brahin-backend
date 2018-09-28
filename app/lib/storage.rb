@@ -1,18 +1,28 @@
 module Storage
   def self.included(base)
     base.instance_eval do
-      cattr_writer :storage
-
       def storage
-        @storage ||= build_storage
+        Storage.storage
       end
+    end
+  end
 
-      def build_storage
-        return FileStorage.new if ENV['STORAGE'] == 'file'
-        return RedisStorage.new if ENV['STORAGE'] == 'redis'
-        return FileStorage.new if ENV['RAILS_ENV'].in?(['development', 'test'])
-        return RedisStorage.new
-      end
+  class << self
+    def storage
+      @storage ||= build_storage
+    end
+
+    def build_storage
+      return FileStorage.new if ENV['STORAGE'] == 'file'
+      return RedisStorage.new if ENV['STORAGE'] == 'redis'
+      return FileStorage.new(File.expand_path('data')) if ENV['RAILS_ENV'].in?(['development'])
+      return FileStorage.new(File.expand_path('tmp/testdata')) if ENV['RAILS_ENV'].in?(['test'])
+      return FileStorage.new if ENV['RAILS_ENV'].in?(['development', 'test'])
+      return RedisStorage.new
+    end
+
+    def reset
+      storage.reset
     end
   end
 

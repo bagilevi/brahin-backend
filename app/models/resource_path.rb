@@ -8,7 +8,7 @@ class ResourcePath < Dry::Struct
 
   def self.[](path)
     return path if path.is_a? self
-    new(elements: self.sanitized_elements(path))
+    new(elements: self.sanitized_elements(path || ''))
   end
 
   def inspect
@@ -69,7 +69,9 @@ class ResourcePath < Dry::Struct
   private
 
   def self.sanitized_elements(path)
-    path.split('/').map(&:presence).compact.map(&method(:sanitize_path_element))
+    elements = path.split('/').map(&:presence).compact.map(&method(:sanitize_path_element))
+    return [] if elements == ['home']
+    elements
   end
 
   def self.sanitize_path_element(s)

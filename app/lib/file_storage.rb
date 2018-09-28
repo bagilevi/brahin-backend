@@ -1,6 +1,10 @@
 # Storage backend preferred for development since it's easy to inspect.
 #
 class FileStorage
+  def initialize(root)
+    @root = Pathname.new(root || File.expand_path('data'))
+  end
+
   def get(path, part)
     sp = storage_path(path, part)
     if File.exist?(sp)
@@ -17,28 +21,21 @@ class FileStorage
   end
 
   def delete_all_parts(part)
-    Dir[root.join('data', '**', part)].each do |fn|
+    Dir[root.join('**', part)].each do |fn|
       File.delete(fn)
     end
   end
 
+  def reset
+    FileUtils.rm_rf(root.to_s)
+  end
+
   private
+
+  attr_reader :root
 
   def storage_path(path, part_type)
     path = ResourcePath[path]
-    root.join('data', *path.elements, part_type).to_s
-  end
-
-  def sanitize_path(path)
-    return 'home' if path.blank?
-    path.split('/').compact.map(&method(:sanitize_path_element)).join('/')
-  end
-
-  def root
-    Rails.root
-  end
-
-  def sanitize_path_element(s)
-    s.parameterize
+    root.join(*path.elements, part_type).to_s
   end
 end

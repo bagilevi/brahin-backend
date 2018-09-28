@@ -20,30 +20,26 @@ class PathAuthorization < Dry::Struct
     return Authorization.new(records, path, token)
   end
 
-  # def self.find_highest_path(path, token)
-  #   where(path: match_paths(path), token: token).pluck(:path).min_by(&:length)
-  # end
+  def self.find_highest_path(path, token)
+    path = ResourcePath[path]
+    records = path.with_ancestors.flat_map { |iter_path| Access.find(iter_path)&.authorizations }.compact
+    records.select! { |entry| entry.token == token }
+    records.map(&:path).min_by(&:depth)
+  end
 
   def self.update_all_for_path(path, entries)
-    transaction do
-      where(path: path).delete_all
-      if entries.is_a?(Hash)
-        entries = entries.map { |k, v| v }
-      end
-      entries.each do |attrs|
-        create!(
+    path = ResourcePath[path]
+    permissions = Access[path]
+    permissions.authorizations =
+      entries.map do |attrs|
+        PathAuthorization.new(
           path: path,
           token: attrs[:token].presence,
           level: attrs[:level]&.to_i,
         )
       end
-    end
+    permissions.save
   end
-
-  # def self.match_paths(path)
-  #   elements = path == '/' ? [""] : path.split('/')
-  #   (0 .. elements.size - 1).map { |i| i == 0 ? '/' : elements[0 .. i].join('/') }
-  # end
 
   def self.delete_all
     Access.delete_all
@@ -56,7 +52,7 @@ class PathAuthorization < Dry::Struct
     access = Access.find_or_initialize(path)
     record = PathAuthorization.new(path: path, level: level, token: token)
     access.authorizations << record
-    access.save!
+    access.save
 
     record
   end
@@ -72,7 +68,7 @@ class PathAuthorization < Dry::Struct
 
   class Authorization < AuthorizationBase
     def initialize(records, path, token)
-      pp records
+      # pp records
       @records = records
       container_path = @records.select { |r| r.level == ADMIN }.map(&:path).max_by(&:depth)
       @records.reject! { |r| r.path.nests?(container_path) }

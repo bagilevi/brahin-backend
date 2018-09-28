@@ -235,4 +235,51 @@ describe PathAuthorization do
       expect(PathAuthorization.get('/foo/bar', nil).can_read?).to be false
     end
   end
+
+  describe 'find_highest_path' do
+    context 'token is defined on the same path' do
+      before do
+        PathAuthorization.create!(
+          path: '/foo/bar',
+          token: 'RdrTkn',
+          level: AccessLevel::READ,
+        )
+      end
+
+      it 'returns the path which has the token' do
+        result = PathAuthorization.find_highest_path('/foo/bar', 'RdrTkn')
+        expect(result.to_s).to eq '/foo/bar'
+      end
+    end
+
+    context 'token is defined on a higher path' do
+      before do
+        PathAuthorization.create!(
+          path: '/foo',
+          token: 'RdrTkn',
+          level: AccessLevel::READ,
+        )
+      end
+
+      it 'returns the path which has the token' do
+        result = PathAuthorization.find_highest_path('/foo/bar', 'RdrTkn')
+        expect(result.to_s).to eq '/foo'
+      end
+    end
+
+    context 'token is defined on a deeper path' do
+      before do
+        PathAuthorization.create!(
+          path: '/foo/bar/zoo',
+          token: 'RdrTkn',
+          level: AccessLevel::READ,
+        )
+      end
+
+      it 'returns nothing' do
+        result = PathAuthorization.find_highest_path('/foo/bar', 'RdrTkn')
+        expect(result).to be_nil
+      end
+    end
+  end
 end

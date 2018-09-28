@@ -38,6 +38,8 @@ gem 'redis'
 gem 'sinatra'
 gem 'dry-types'
 gem 'dry-struct'
+gem 'dry-struct-setters'
+gem 'memoist'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -1,11 +1,10 @@
-<% content_for(:title, @resource.title) %>
+<% content_for(:title, @resource_attributes[:title]) %>
 
 <div id="page"><div
   class="brahin-resource"
-  data-m-id="<%= @resource.id %>"
-  data-m-editor="<%= @resource.editor %>"
-  data-m-editor-url="<%= @resource.editor_url %>"
+  data-m-editor="<%= @resource_attributes[:editor] %>"
+  data-m-editor-url="<%= @resource_attributes[:editor_url] %>"
   data-attributes="<%= JSON.generate(@resource_attributes.except(:body)) %>"
-><%= @resource.body.html_safe %></div></div></div>
+><%= @resource_attributes[:body].html_safe %></div></div></div>
 <footer id="page-footer">
 </footer>
