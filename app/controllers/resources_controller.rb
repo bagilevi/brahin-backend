@@ -1,6 +1,6 @@
 class ResourcesController < ApplicationController
   include AccessLevel
-skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token
   force_ssl if ENV['FORCE_SSL']
   before_action :enforce_authorization_for_creating, only: :create
   before_action :enforce_authorization_for_admin, only: [:share, :sharing, :update_sharing]
@@ -29,10 +29,13 @@ skip_before_action :verify_authenticity_token
       return
     end
 
-    @resource_attributes = @resource.attributes
-    if authorized_to?(ADMIN)
-      @resource_attributes[:admin] = true
-    end
+    # TODO: model permissions & create presenter
+    @resource_attributes = @resource.attributes.merge(
+      permissions: {
+        admin: authorized_to?(ADMIN),
+        write: authorized_to?(WRITE),
+      }
+    )
 
     respond_to do |format|
       format.html

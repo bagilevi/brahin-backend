@@ -1,9 +1,11 @@
 <% content_for(:title, @resource.title) %>
 
 <div id="page"><div
-  class="m-resource"
+  class="brahin-resource"
   data-m-id="<%= @resource.id %>"
   data-m-editor="<%= @resource.editor %>"
   data-m-editor-url="<%= @resource.editor_url %>"
   data-attributes="<%= JSON.generate(@resource_attributes.except(:body)) %>"
-><%= @resource.body.html_safe %></div></div>
+><%= @resource.body.html_safe %></div></div></div>
+<footer id="page-footer">
+</footer>
