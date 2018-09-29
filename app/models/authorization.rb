@@ -2,17 +2,17 @@
 class Authorization
   include AccessLevel
 
-  def initialize(grants, path, token)
+  def initialize(grants, path, tokens)
     @grants = grants
     container_path = @grants.select { |r| r.level == ADMIN }.map(&:path).max_by(&:depth)
-    @grants.reject! { |r| r.path.nests?(container_path) }
+    @grants.reject! { |r| r.level != ADMIN && r.path.nests?(container_path) }
 
     @path = path
-    @token = token
+    @tokens = tokens
   end
 
   def can?(wanted_level)
-    matching_records = @grants.select { |r| r.token.nil? || r.token == @token }
+    matching_records = @grants.select { |r| r.token.nil? || r.token.in?(@tokens) }
     other_records = @grants - matching_records
 
     authorizing_record = matching_records.find { |r| allows?(wanted_level, r.level) }

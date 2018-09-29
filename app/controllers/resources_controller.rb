@@ -19,7 +19,7 @@ class ResourcesController < ApplicationController
     result = ShowResource.(
       path: path,
       edit: params[:edit].present?,
-      access_token: access_token,
+      access_tokens: access_tokens,
     )
 
     @resource_attributes = result.resource_attributes
@@ -47,7 +47,7 @@ class ResourcesController < ApplicationController
   def create
     result = CreateResource.(
       path: path,
-      access_token: access_token,
+      access_tokens: access_tokens,
       params: {
         title: params[:title],
         body: params[:body],
@@ -65,7 +65,7 @@ class ResourcesController < ApplicationController
   def patch
     result = UpdateResource.(
       path: path,
-      access_token: access_token,
+      access_tokens: access_tokens,
       params: {
         title: params[:title],
         body: params[:body],
@@ -81,8 +81,8 @@ class ResourcesController < ApplicationController
 
   def permissions
     data = GetPermissions.(
-      path:         path,
-      access_token: access_token
+      path:          path,
+      access_tokens: access_tokens
     )
     respond_to do |format|
       format.json do
@@ -98,9 +98,9 @@ class ResourcesController < ApplicationController
     end
 
     UpdatePermissions.(
-      path:         path,
-      access_token: access_token,
-      grants:       grants,
+      path:          path,
+      access_tokens: access_tokens,
+      grants:        grants,
     )
     respond_to do |format|
       format.json do
@@ -115,28 +115,35 @@ class ResourcesController < ApplicationController
     ResourcePath[params[:path]]
   end
 
-  def access_token
+  def access_tokens
     @access_token ||=
       if (token = params[:access_token]).present?
         # Remember access token in a cookie
-        cookies[:access_token] = {
-          value: token,
-          expires: 1.year,
-          path: PermissionGrant.find_highest_path(path, token) || '/'
-        }
-        token
-      elsif cookies[:access_token].present?
-        cookies[:access_token]
+        add_token_to_cookies(token)
+        [token]
+      elsif cookie_tokens.any?
+        cookie_tokens
       else
         # Create a random token for the user
         token = TokenGenerator.generate_token(40)
-        cookies[:access_token] = {
-          value: token,
-          expires: 1.year,
-          path: '/'
-        }
-        token
+        add_token_to_cookies(token)
+        [token]
       end
+  end
+
+  def add_token_to_cookies(token, path = '/')
+    token_head, token_tail = token[0..7], token[8..-01]
+    cookies["AT_#{token_head}"] = {
+      value: token_tail,
+      expires: 1.year,
+      path: path
+    }
+  end
+
+  def cookie_tokens
+    cookies.to_h.keys
+      .select { |name| name.start_with?('AT_') }
+      .map { |name| "#{name[/^AT_(.*)$/, 1]}#{cookies[name]}" }
   end
 
   def render_error(message, status: 500)

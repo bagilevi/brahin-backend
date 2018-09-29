@@ -3,7 +3,7 @@ require 'mini_helper'
 describe ShowResource do
   let(:action) { described_class.(path: ResourcePath[path], edit: edit, access_token: access_token )}
   let(:result) { action }
-  let(:access_token) { nil }
+  let(:access_token) { 'Tkn1' }
   let(:edit) { false }
   let(:path) { '/notes' }
 

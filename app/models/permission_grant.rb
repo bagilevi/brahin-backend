@@ -8,17 +8,18 @@ class PermissionGrant < Dry::Struct
   attribute :level, Types::Strict::Integer
   attribute :token, Types::Strict::String.optional
 
-  def self.get_authorization(path, token)
+  def self.get_authorization(path, tokens)
+    tokens = Array(tokens)
     path = ResourcePath[path]
     grants = path.with_ancestors.flat_map { |iter_path| ResourcePermissions.find(iter_path)&.grants }.compact
 
-    if grants.none? { |r| r.level == ADMIN }
+    if grants.none? { |r| r.level == ADMIN } && tokens.size == 1
       # Nobody owns this site => first visitor takes ownership
-      grant = create!(path: '/', level: ADMIN, token: token)
+      grant = create!(path: '/', level: ADMIN, token: tokens.first)
       grants = [grant]
     end
 
-    return Authorization.new(grants, path, token)
+    return Authorization.new(grants, path, tokens)
   end
 
   def self.find_highest_path(path, token)

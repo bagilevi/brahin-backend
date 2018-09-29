@@ -215,9 +215,25 @@ describe PermissionGrant do
       expect(PermissionGrant.get_authorization('/foo/bar', 'TknAdm').can_write?).to be true
       expect(PermissionGrant.get_authorization('/foo/bar', 'TknAdm').can_admin?).to be true
     end
+
+    context 'when someone else owns a sub-path' do
+      before do
+        PermissionGrant.create!(
+          path: '/foo/bar',
+          token: 'Tkn2',
+          level: AccessLevel::ADMIN,
+        )
+      end
+
+      it 'still allows admin to do anything' do
+        expect(PermissionGrant.get_authorization('/foo/bar', 'TknAdm').can_read?).to be true
+        expect(PermissionGrant.get_authorization('/foo/bar', 'TknAdm').can_write?).to be true
+        expect(PermissionGrant.get_authorization('/foo/bar', 'TknAdm').can_admin?).to be true
+      end
+    end
   end
 
-  describe 'when someone is owns a sub-path' do
+  describe 'when someone else owns a sub-path' do
     before do
       PermissionGrant.create!(
         path: '/foo',

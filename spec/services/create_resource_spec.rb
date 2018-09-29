@@ -3,7 +3,7 @@ require 'mini_helper'
 describe CreateResource do
   let(:action) { described_class.(path: ResourcePath[path], params: params, access_token: access_token )}
   let(:result) { action }
-  let(:access_token) { nil }
+  let(:access_token) { 'Tkn1' }
   let(:params) { { title: 'Created', body: '<h1>Created</h1>'} }
   let(:path) { '/notes' }
 

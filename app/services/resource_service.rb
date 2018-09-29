@@ -3,7 +3,8 @@ class ResourceService < Dry::Struct
   include AccessLevel
 
   attribute :path, ResourcePath
-  attribute :access_token, Types::Strict::String.optional
+  attribute :access_tokens, Types::Array.optional.default { [] }
+  attribute :access_token, Types::Strict::String.optional.default(nil)
 
   def self.call(attrs)
     catch :halt do
@@ -29,7 +30,7 @@ class ResourceService < Dry::Struct
   end
 
   def can?(action_level)
-    @authorization ||= PermissionGrant.get_authorization(path, access_token)
+    @authorization ||= PermissionGrant.get_authorization(path, all_access_tokens)
     @authorization.can?(action_level)
   end
 
@@ -43,5 +44,11 @@ class ResourceService < Dry::Struct
         level: AccessLevel::ADMIN,
       )
     end
+  end
+
+  private
+
+  def all_access_tokens
+    [access_token].compact + (access_tokens || [])
   end
 end
