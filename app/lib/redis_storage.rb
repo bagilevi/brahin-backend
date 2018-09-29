@@ -1,13 +1,29 @@
 require 'redis'
 
 class RedisStorage
-  def get(path)
-    payload = redis.get(key(path))
-    deserialize(payload) if payload.present?
+  def get(path, part)
+    redis.get(key(path, part))
   end
 
-  def put(path, attributes)
-    redis.set(key(path), serialize(attributes))
+  def put(path, part, payload)
+    redis.set(key(path, part), payload)
+  end
+
+  def del(path, part)
+    redis.del(key(path, part))
+  end
+
+  def delete_all_parts(part)
+    keys = redis.keys("*:#{part}")
+    redis.pipelined do
+      keys.each do |key|
+        redis.del(key)
+      end
+    end
+  end
+
+  def reset
+    redis.flushdb
   end
 
   private
@@ -16,15 +32,7 @@ class RedisStorage
     $redis || Redis.new
   end
 
-  def key(path)
-    "p:#{path}"
-  end
-
-  def serialize(attributes)
-    JSON.generate(attributes)
-  end
-
-  def deserialize(payload)
-    JSON.parse(payload)
+  def key(path, part)
+    "resource:#{path.to_key}:#{part}"
   end
 end
