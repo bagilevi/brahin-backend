@@ -1,22 +1,34 @@
 class ResourcesController < ApplicationController
+  include AccessLevel
+  skip_before_action :verify_authenticity_token
   force_ssl if ENV['FORCE_SSL']
-  before_action :authenticate_for_reading, only: :show
-  before_action :authenticate_for_writing, only: [:create, :patch]
-  before_action :sanitize_path
+
+  rescue_from Errors::NotFoundError do |e|
+    render_error e.message, status: 404
+  end
+
+  rescue_from Errors::UnauthorizedError do |e|
+    render_error e.message, status: 403
+  end
+
+  rescue_from Errors::AlreadyExistsError do |e|
+    render_error e.message, status: 409
+  end
 
   def show
-    if params[:edit]
-      authenticate_for_writing
-    end
+    result = ShowResource.(
+      path: path,
+      edit: params[:edit].present?,
+      access_token: access_token,
+    )
 
-    @load_frontend = authorized_to_write?
-
-    @resource = Resource.find_or_initialize_by_path(params[:path])
+    @resource_attributes = result.resource_attributes
+    @load_frontend = @resource_attributes[:permissions][:write]
 
     respond_to do |format|
       format.html
       format.json do
-        render json: @resource.attributes
+        render json: result.resource_attributes
       end
     end
   end
@@ -33,25 +45,14 @@ class ResourcesController < ApplicationController
   end
 
   def create
-    @resource = Resource.find_by_path(params[:path])
-
-    if (@resource)
-      respond_to do
-        format.html do
-          render text: 'Already exists'
-        end
-        format.json do
-          render json: { error: 'Already exists' }, status: 409
-        end
-      end
-      return
-    end
-
-    @resource = Resource.create(
-      path: params[:path],
-      title: params[:title],
+    result = CreateResource.(
+      path: path,
+      access_token: access_token,
+      params: {
+        title: params[:title],
+        body: params[:body],
+      }
     )
-    @resource.save!
 
     respond_to do |format|
       format.html
@@ -62,9 +63,47 @@ class ResourcesController < ApplicationController
   end
 
   def patch
+    result = UpdateResource.(
+      path: path,
+      access_token: access_token,
+      params: {
+        title: params[:title],
+        body: params[:body],
+      }
+    )
+
     respond_to do |format|
       format.json do
-        Resource.patch_by_path(params)
+        render json: { ok: true }
+      end
+    end
+  end
+
+  def permissions
+    data = GetPermissions.(
+      path:         path,
+      access_token: access_token
+    )
+    respond_to do |format|
+      format.json do
+        render json: data
+      end
+    end
+  end
+
+  def update_permissions
+    grants = params.permit!.to_h[:grants] || []
+    if grants.is_a?(Hash)
+      grants = grants.map { |k, v| v }
+    end
+
+    UpdatePermissions.(
+      path:         path,
+      access_token: access_token,
+      grants:       grants,
+    )
+    respond_to do |format|
+      format.json do
         render json: { ok: true }
       end
     end
@@ -72,36 +111,42 @@ class ResourcesController < ApplicationController
 
   private
 
-  def sanitize_path
-    params[:path] = (params[:path] || '').sub(/^\//, '').sub(/.json$/, '').presence || 'home'
+  def path
+    ResourcePath[params[:path]]
   end
 
-  def authorized_to_write?
-    authorized_to?('write')
+  def access_token
+    @access_token ||=
+      if (token = params[:access_token]).present?
+        # Remember access token in a cookie
+        cookies[:access_token] = {
+          value: token,
+          expires: 1.year,
+          path: PermissionGrant.find_highest_path(path, token) || '/'
+        }
+        token
+      elsif cookies[:access_token].present?
+        cookies[:access_token]
+      else
+        # Create a random token for the user
+        token = TokenGenerator.generate_token(40)
+        cookies[:access_token] = {
+          value: token,
+          expires: 1.year,
+          path: '/'
+        }
+        token
+      end
   end
 
-  def authorized_to_read?
-    authorized_to?('read') || authorized_to?('write')
-  end
-
-  def authenticate_for_writing
-    return if authorized_to_write?
-    request_http_basic_authentication
-  end
-
-  def authenticate_for_reading
-    return if authorized_to_read?
-    request_http_basic_authentication
-  end
-
-  def authorized_to?(permission)
-    # Everyone can do anything if no configuration set.
-    return true if $auth_config.blank?
-
-    return true if $auth_config.has_wildcard?(permission)
-
-    authenticate_with_http_basic do |username, password|
-      $auth_config.match?(permission, username, password)
+  def render_error(message, status: 500)
+    respond_to do |format|
+      format.html do
+        render plain: message, status: status
+      end
+      format.json do
+        render json: { error: message }, status: status
+      end
     end
   end
 end

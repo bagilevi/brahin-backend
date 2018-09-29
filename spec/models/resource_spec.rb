@@ -2,56 +2,54 @@ require 'mini_helper'
 
 describe Resource do
   before do
-    allow_any_instance_of(FileStorage).to receive(:root).and_return(ROOT_PATH)
+    Storage.reset
   end
 
-  shared_examples 'Resource' do
-    describe '.patch_by_path' do
-      context 'when new' do
-        it 'remembers the body' do
-          Resource.patch_by_path(path: 'hello', body: 'Hello')
-          expect(Resource.find_by_path('hello').body).to eq 'Hello'
-        end
+  describe '.create!' do
+    it 'sets defaults' do
+      Resource['/hello'].create!(body: 'Hello')
+      resource = Resource['/hello']
+      expect(resource.path.to_s).to eq '/hello'
+      expect(resource.editor).to be_present
+      expect(resource.editor_url).to be_present
+    end
+  end
 
-        it 'sets defaults' do
-          Resource.patch_by_path(path: 'hello', body: 'Hello')
-          resource = Resource.find_by_path('hello')
-          expect(resource.id).to be_present
-          expect(resource.path).to eq 'hello'
-          expect(resource.editor).to be_present
-          expect(resource.editor_url).to be_present
-        end
-      end
-
-      context 'when exists' do
-        it 'patches it' do
-          Resource.patch_by_path(path: 'hello', body: 'Hello')
-
-          expect {
-            Resource.patch_by_path(path: 'hello', body: 'Moin')
-          }.to change {
-            Resource.find_by_path('hello').body
-          }.from('Hello').to('Moin')
-        end
+  describe '.update!' do
+    context 'when new' do
+      it 'remembers the body' do
+        Resource.patch_by_path(path: 'hello', body: 'Hello')
+        expect(Resource.find_by_path('hello').body).to eq 'Hello'
       end
     end
-  end
 
-  context 'with the default storage' do
-    it_behaves_like 'Resource'
-  end
+    context 'when exists' do
+      it 'patches it' do
+        Resource.patch_by_path(path: 'hello', body: 'Hello')
 
-  context 'with FileStorage' do
-    before do
-      Resource.storage = FileStorage.new
+        expect {
+          Resource.patch_by_path(path: 'hello', body: 'Moin')
+        }.to change {
+          Resource.find_by_path('hello').body
+        }.from('Hello').to('Moin')
+      end
     end
-    it_behaves_like 'Resource'
   end
 
-  context 'with RedisStorage' do
-    before do
-      Resource.storage = RedisStorage.new
+  describe '#exists?' do
+    context 'if non-existent' do
+      it 'returns false' do
+        expect(Resource['/x'].exists?).to be false
+      end
     end
-    it_behaves_like 'Resource'
+
+    context 'when it was created' do
+      it 'returns true' do
+        resource = Resource['/x']
+        resource.body = ""
+        resource.save
+        expect(Resource['/x'].exists?).to be true
+      end
+    end
   end
 end

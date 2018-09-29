@@ -6,9 +6,16 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/dependencies'
 require 'virtus'
+require 'dry-types'
+require 'dry-struct'
+require 'dry/struct/setters'
+require 'memoist'
+require 'pp'
+require 'yaml'
 
 ActiveSupport::Dependencies.autoload_paths += %w(
   app/models
+  app/services
   app/lib
 )
 
