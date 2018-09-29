@@ -59,8 +59,12 @@ body {
   }
 }
 
-.m-resource li > p { margin: 0.5em 0; }
-.m-resource .task > .task-contents > p { margin: 0.5em 0;  }
+.brahin-resource li > p { margin: 0.5em 0; }
+.brahin-resource .task { margin: 0.5em 0; }
+.brahin-resource .task > .task-contents > p { margin: 0.5em 0;  }
+.brahin-resource .task > .task-contents > p:first-child { margin-top: 0;  }
+.brahin-resource .task > .task-contents > p:last-child { margin-bottom: 0;  }
+
 
 #error-container {
   position: fixed;
