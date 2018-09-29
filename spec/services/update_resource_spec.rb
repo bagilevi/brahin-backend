@@ -9,7 +9,7 @@ describe UpdateResource do
 
   before do
     Storage.reset
-    PathAuthorization.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
+    PermissionGrant.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
   end
 
   context 'resource does not exist' do
@@ -30,7 +30,7 @@ describe UpdateResource do
 
       it 'makes the creator the owner' do
         action
-        expect(PathAuthorization.get('/notes', 'Tkn1').can?(AccessLevel::ADMIN)).to be true
+        expect(PermissionGrant.get_authorization('/notes', 'Tkn1').can?(AccessLevel::ADMIN)).to be true
       end
     end
   end

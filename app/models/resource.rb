@@ -46,7 +46,7 @@ class Resource < Dry::Struct
   end
 
   def permissions
-    @permissions ||= Access[path]
+    @permissions ||= ResourcePermissions[path]
   end
 
   def patch(params)

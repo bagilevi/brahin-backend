@@ -79,7 +79,7 @@ class ResourcesController < ApplicationController
     end
   end
 
-  def sharing
+  def permissions
     data = GetPermissions.(
       path:         path,
       access_token: access_token
@@ -91,16 +91,16 @@ class ResourcesController < ApplicationController
     end
   end
 
-  def update_sharing
-    entries = params.permit!.to_h[:entries] || []
-    if entries.is_a?(Hash)
-      entries = entries.map { |k, v| v }
+  def update_permissions
+    grants = params.permit!.to_h[:grants] || []
+    if grants.is_a?(Hash)
+      grants = grants.map { |k, v| v }
     end
 
     UpdatePermissions.(
       path:         path,
       access_token: access_token,
-      entries:      entries,
+      grants:       grants,
     )
     respond_to do |format|
       format.json do
@@ -122,7 +122,7 @@ class ResourcesController < ApplicationController
         cookies[:access_token] = {
           value: token,
           expires: 1.year,
-          path: PathAuthorization.find_highest_path(path, token) || '/'
+          path: PermissionGrant.find_highest_path(path, token) || '/'
         }
         token
       elsif cookies[:access_token].present?

@@ -1,12 +1,12 @@
 class UpdatePermissions < ResourceService
-  attribute :entries, Types::Strict::Array
+  attribute :grants, Types::Strict::Array
 
   def process
     validate_permission!(ADMIN)
 
-    PathAuthorization.update_all_for_path(
+    PermissionGrant.update_all_for_path(
       path,
-      entries
+      grants
     )
   end
 end

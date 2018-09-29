@@ -24,7 +24,7 @@ describe ShowResource do
   context 'site-wide permissions exist' do
     before do
       Storage.reset
-      PathAuthorization.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
+      PermissionGrant.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
     end
 
     context 'resource does not exist' do

@@ -29,7 +29,7 @@ class ResourceService < Dry::Struct
   end
 
   def can?(action_level)
-    @authorization ||= PathAuthorization.get(path, access_token)
+    @authorization ||= PermissionGrant.get_authorization(path, access_token)
     @authorization.can?(action_level)
   end
 
@@ -37,7 +37,7 @@ class ResourceService < Dry::Struct
     resource.create!(params)
 
     unless can?(ADMIN)
-      PathAuthorization.create!(
+      PermissionGrant.create!(
         path: path,
         token: access_token,
         level: AccessLevel::ADMIN,

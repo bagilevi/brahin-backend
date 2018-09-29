@@ -15,9 +15,9 @@ describe GetPermissions do
     context 'with root page' do
       let(:path) { '/' }
 
-      it 'creates first permission entry' do
+      it 'creates first permission grant' do
         expect { action }
-          .to change { Access['/'].authorizations.count }.by(1)
+          .to change { ResourcePermissions['/'].grants.count }.by(1)
 
         expect(result.size).to eq 1
         expect(result[0][:path]).to eq '/'
@@ -30,7 +30,7 @@ describe GetPermissions do
   context 'site-wide permissions exist' do
     before do
       Storage.reset
-      PathAuthorization.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
+      PermissionGrant.create!(path: '/', level: AccessLevel::ADMIN, token: 'OwnrTkn')
     end
 
     context 'queried by site owner' do
