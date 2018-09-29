@@ -8,7 +8,7 @@ require "sprockets/railtie"
 Bundler.require(*Rails.groups)
 
 module Brahin
-  VERSION = '0.2.0'.freeze
+  VERSION = '0.3.0'.freeze
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
