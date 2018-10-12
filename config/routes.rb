@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get '/_spa_dummy', to: 'resources#spa_dummy'
   get '/_local(/*path)', to: 'resources#local'
 
+  get '/_git/pull', to: 'gitsync#pull'
+  post '/_git/pull', to: 'gitsync#pull'
+
   get '/(*path)/_permissions', to: 'resources#permissions'
   put '/(*path)/_permissions', to: 'resources#update_permissions'
   get '/(*path)', to: 'resources#show'

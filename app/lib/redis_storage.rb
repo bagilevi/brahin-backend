@@ -1,6 +1,7 @@
 require 'redis'
 
 class RedisStorage
+  delegate :redis, to: :RedisConnection
   def get(path, part)
     redis.get(key(path, part))
   end
@@ -26,13 +27,19 @@ class RedisStorage
     redis.flushdb
   end
 
-  private
-
-  def redis
-    $redis || Redis.new
+  def each
+    redis.keys("resource:*").each do |k|
+      path, part = k.split(':')[1..2]
+      payload = get(path, part)
+      path = path.sub(/^root\//, '/').sub(/^root$/, '/')
+      yield path, part, payload
+    end
   end
 
+  private
+
   def key(path, part)
-    "resource:#{path.to_key}:#{part}"
+    path = path.to_key if path.respond_to?(:to_key)
+    "resource:#{path}:#{part}"
   end
 end

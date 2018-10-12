@@ -13,11 +13,11 @@ module Storage
     end
 
     def build_storage
+      return GitStorage.new if ENV['STORAGE'] == 'git'
       return FileStorage.new if ENV['STORAGE'] == 'file'
       return RedisStorage.new if ENV['STORAGE'] == 'redis'
       return FileStorage.new(File.expand_path('data')) if ENV['RAILS_ENV'].in?(['development'])
       return MemoryStorage.new if ENV['RAILS_ENV'].in?(['test'])
-      return FileStorage.new if ENV['RAILS_ENV'].in?(['development', 'test'])
       return RedisStorage.new
     end
 

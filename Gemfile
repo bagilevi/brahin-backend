@@ -36,13 +36,19 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
-gem 'virtus'
-gem 'redis'
 gem 'sinatra'
+gem 'virtus'
 gem 'dry-types'
 gem 'dry-struct'
 gem 'dry-struct-setters'
-gem 'memoist'
+gem 'nokogiri'
+
+group :default, :git_sync_worker do
+  gem 'activesupport'
+  gem 'redis'
+  gem 'memoist'
+  gem 'colorize'
+end
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

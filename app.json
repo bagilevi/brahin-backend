@@ -6,6 +6,10 @@
     "web": {
       "quantity": 1,
       "size": "free"
+    },
+    "gitsync": {
+      "quantity": 1,
+      "size": "free"
     }
   },
   "addons": [

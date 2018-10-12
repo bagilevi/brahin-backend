@@ -25,9 +25,14 @@ It uses file storage in development, Redis in production.
 
 ### Force SSL
 
-To force redirection to the https endpoint, set the env var:
+Environment variables:
 
-    FORCE_SSL=1
+* FORCE_SSL=1 - force redirection to the https endpoint
+* GITHUB_WEBHOOK_SECRET
+* STORAGE=git|file|redis
+* GIT_SYNC_REMOTE - remote Git url
+* GIT_REPO_DIR - where to store the git repository, default: <rails-root>/data
+* BRAHIN_FRONTEND_URL - default: https://brahin.online/modules
 
 ## Development
 

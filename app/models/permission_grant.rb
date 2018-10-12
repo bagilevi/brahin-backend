@@ -13,7 +13,7 @@ class PermissionGrant < Dry::Struct
     path = ResourcePath[path]
     grants = path.with_ancestors.flat_map { |iter_path| ResourcePermissions.find(iter_path)&.grants }.compact
 
-    if grants.none? { |r| r.level == ADMIN } && tokens.size == 1
+    if grants.none? { |r| r.level == ADMIN } && tokens.size >= 1
       # Nobody owns this site => first visitor takes ownership
       grant = create!(path: '/', level: ADMIN, token: tokens.first)
       grants = [grant]

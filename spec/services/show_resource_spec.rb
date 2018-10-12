@@ -7,6 +7,8 @@ describe ShowResource do
   let(:edit) { false }
   let(:path) { '/notes' }
 
+  let(:body) { "<h1>Hello</h1>\n" }
+
   context 'no site-wide permissions' do
     before do
       Storage.reset
@@ -45,7 +47,7 @@ describe ShowResource do
     end
 
     context 'resource exists' do
-      let!(:resource) { Resource[path].create!(title: 'Hello', body: '<h1>Hello</h1>') }
+      let!(:resource) { Resource[path].create!(title: 'Hello', body: body) }
 
       context 'no permissions' do
         it 'raises authorization error' do
@@ -60,7 +62,7 @@ describe ShowResource do
 
         it 'returns details' do
           expect(result.resource_attributes[:title]).to eq 'Hello'
-          expect(result.resource_attributes[:body]).to eq '<h1>Hello</h1>'
+          expect(result.resource_attributes[:body]).to eq body
         end
       end
 
