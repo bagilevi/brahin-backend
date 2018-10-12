@@ -10,11 +10,11 @@
 <%= csp_meta_tag %>
 <%= javascript_tag <<~JS.strip
 const BRAHIN_START_TIME = performance.now()
-const BRAHIN_VERSION = '#{brahin_version}'
+const BRAHIN_VERSION = '#{brahin_frontend_version}'
 const BRAHIN_FRONTEND_URL = #{JSON.generate(fronted_url)}
 JS
 %>
-<script src="/require.js" data-main="<%= fronted_url %>/brahin-init-v<%= brahin_version %>"></script>
+<script src="/require.js" data-main="<%= fronted_url %>/brahin-init-v<%= brahin_frontend_version %>"></script>
 <% end %>
 </head>
 <body>

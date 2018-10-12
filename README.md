@@ -33,6 +33,8 @@ Environment variables:
 * GIT_SYNC_REMOTE - remote Git url
 * GIT_REPO_DIR - where to store the git repository, default: <rails-root>/data
 * BRAHIN_FRONTEND_URL - default: https://brahin.online/modules
+* BRAHIN_FRONTEND_VERSION - which version of the front-end to load;
+  examples: 0-pre, 0.3-pre, 0.3.1, 0.3.1+e3c7df
 
 ## Development
 
