@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   get '/_git/pull', to: 'gitsync#pull'
   post '/_git/pull', to: 'gitsync#pull'
 
+  post '/_blobs', to: 'blobs#create'
+  get '/_blobs/:name', to: 'blobs#show'
+
   get '/(*path)/_permissions', to: 'resources#permissions'
   put '/(*path)/_permissions', to: 'resources#update_permissions'
   get '/(*path)', to: 'resources#show'
