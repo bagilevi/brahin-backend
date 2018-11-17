@@ -51,4 +51,24 @@ class ResourceService < Dry::Struct
   def all_access_tokens
     [access_token].compact + (access_tokens || [])
   end
+
+  def resource_response
+    Response.new(
+      resource_attributes: {
+        path:        path.to_s,
+        title:       resource.title,
+        body:        resource.body,
+        editor:      resource.editor,
+        editor_url:  resource.editor_url,
+        permissions: {
+          admin: can?(ADMIN),
+          write: can?(WRITE),
+        }
+      }
+    )
+  end
+
+  class Response < Dry::Struct
+    attribute :resource_attributes, Types::Any
+  end
 end

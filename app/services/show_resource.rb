@@ -11,20 +11,7 @@ class ShowResource < ResourceService
     else
       raise Errors::NotFoundError.new('Page not found.')
     end
-
-    Response.new(
-      resource_attributes: {
-        path:        path.to_s,
-        title:       resource.title,
-        body:        resource.body,
-        editor:      resource.editor,
-        editor_url:  resource.editor_url,
-        permissions: {
-          admin: can?(ADMIN),
-          write: can?(WRITE),
-        }
-      }
-    )
+    resource_response
   end
 
   class Response < Dry::Struct

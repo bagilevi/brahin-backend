@@ -45,6 +45,11 @@ describe CreateResource do
             .to change { Resource[path].title }
             .from(nil).to('Created')
         end
+
+        it 'returns resource attributses' do
+          expect(result.resource_attributes[:title]).to eq 'Created'
+          expect(result.resource_attributes[:path]).to eq '/notes'
+        end
       end
     end
 

@@ -57,7 +57,7 @@ class ResourcesController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render json: @resource.attributes
+        render json: result.resource_attributes
       end
     end
   end

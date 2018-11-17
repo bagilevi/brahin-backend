@@ -8,10 +8,7 @@ class CreateResource < ResourceService
       raise Errors::AlreadyExistsError.new('Page already exists.')
     else
       create_resource_with_ownership(params)
+      resource_response
     end
-  end
-
-  class Response < Dry::Struct
-    attribute :resource_attributes, Types::Any
   end
 end
